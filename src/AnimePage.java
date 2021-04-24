@@ -12,9 +12,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * A class representing the page of an Anime
+ * A class representing the page of an Anime on MAL
  */
-
 public class AnimePage {
     
     private String name;
@@ -39,7 +38,9 @@ public class AnimePage {
 
         recommendedAnimeToFrequencyMap = new HashMap<AnimePage, Integer>();
     }
-
+    /**
+     * Helper function to set the genreList of the AnimePage
+     */
     private void setGenreList() {
         for (Element e : doc.select("span[itemprop=genre]")) {
             if (e.text() != "") {
@@ -52,24 +53,49 @@ public class AnimePage {
      * @return a map of recommended AnimePages to frequency
      * @throws IOException
      */
-    public Map<AnimePage, Integer> getRecommendedAnimeToFrequencyMap() throws IOException{
+    public void setRecommendedAnimeToFrequencyMap() throws IOException{
 
         doc = Jsoup.connect(url + "/userrecs").get();
-        Elements targets = doc.selectFirst("div.border_solid").nextElementSiblings();
+        Elements targets = doc.selectFirst("div.border_solid")
+                .nextElementSiblings();
         Elements targetPages = targets.select("div.picSurround").select("a");
-        Elements targetNum = targets.select("a.js-similar-recommendations-button").select("strong");
-        for (Element e : targetPages) {
-            System.out.println(e.attr("abs:href"));
+        Elements targetNum = targets.select("a.js-similar-recommendations-button")
+                .select("strong");
+
+        AnimePage tempAnimePage = null;
+        AnimePageMap animePageMap = AnimePageMap.getInstance();
+        String url = null;
+
+        int frequency;
+
+        for (int i = 0; i < targetPages.size(); i++) {
+            
+            url = targetPages.get(i).attr("abs:href");
+
+            try {
+                frequency = Integer.parseInt(targetNum.get(i).text()) + 1;
+            } catch (IndexOutOfBoundsException e) {
+                frequency = 1;
+            }
+
+            System.out.println(url);
+            System.out.println(frequency);
+
+            if (animePageMap.containsUrl(url)) {
+                tempAnimePage = animePageMap.get(url);
+            } else {
+                tempAnimePage = new AnimePage(url);
+                animePageMap.put(url, tempAnimePage);
+            }
+            
+            recommendedAnimeToFrequencyMap.put(tempAnimePage, frequency);
         }
-        for (Element e: targetNum) {
-            System.out.println(e.text());
-        }
-        for (int i = 0; i<targetPages.size(); i++) {
-            recommendedAnimeToFrequencyMap.put(new AnimePage(targetPages.get(i).attr("abs:href")),
-                    Integer.parseInt(targetNum.get(i).text()));
-        }
+    }
+
+    public Map<AnimePage, Integer> getRecommendedAnimeToFrequencyMap() {
         return recommendedAnimeToFrequencyMap;
     }
+    
     /**
      * Gets the name of the anime
      * @return The name of the anime
@@ -77,13 +103,15 @@ public class AnimePage {
     public String getName() {
         return name;
     }
+
     /**
      * Gets the list of genres of the anime
-     * @return
+     * @return A list of Genres
      */
     public List<Genre> getGenreList() {
         return genreList;
     }
+    
     public static void main(String[] args) {
         try {
             AnimePage a = new AnimePage("https://myanimelist.net/anime/5114/"
@@ -93,7 +121,7 @@ public class AnimePage {
             for (Genre g : a.getGenreList()) {
                 System.out.println(g);
             }
-
+            a.setRecommendedAnimeToFrequencyMap();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -9,12 +9,12 @@ public class Profile {
 	
 	private HashMap<String, Integer> animes;
 	
-	private HashSet<String> genrePrefs;
+	private HashSet<Genre> genrePrefs;
 	
 	public Profile(String username) {
 		this.username = username;
 		animes = new HashMap<String, Integer>();
-		genrePrefs = new HashSet<String>();
+		genrePrefs = new HashSet<Genre>();
 	}
 	
 	/**
@@ -46,7 +46,7 @@ public class Profile {
 	 * @param genre The genre the User prefers to watch
 	 */
 	public void addGenrePref(String genre) {
-		genrePrefs.add(genre);
+		genrePrefs.add(Genre.fromString(genre));
 	}
 	
 	/**
@@ -54,8 +54,8 @@ public class Profile {
 	 * @param genre The genre preference to be removed
 	 */
 	public void removeGenrePref(String genre) {
-		if (genrePrefs.contains(genre)) {
-			genrePrefs.remove(genre);
+		if (genrePrefs.contains(Genre.fromString(genre))) {
+			genrePrefs.remove(Genre.fromString(genre));
 		}
 		return;
 	}
@@ -64,8 +64,8 @@ public class Profile {
 	 * Get the user's genre preferences
 	 * @return Set of genre preferences
 	 */
-	public Set<String> getGenrePrefs() {
-		return new HashSet<String> (genrePrefs);
+	public Set<Genre> getGenrePrefs() {
+		return new HashSet<Genre> (genrePrefs);
 	}
 	
 	/**

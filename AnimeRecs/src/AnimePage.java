@@ -60,7 +60,7 @@ public class AnimePage {
     /**
      * Helper function to set the genreList of the AnimePage
      */
-    private void setGenreList() {
+    void setGenreList() {
         for (Element e : doc.select("span[itemprop=genre]")) {
             if (e.text() != "") {
                 genreList.add(Genre.fromString(e.text()));

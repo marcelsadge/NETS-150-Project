@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.*;
 
 public class Recommendation {
@@ -12,21 +13,26 @@ public class Recommendation {
 	
 	public void updateRecommendations() {
 		Set<String> animes = user.getAnimesWatched();
-		Set<String> genres = user.getGenrePrefs();
+		Set<Genre> genres = user.getGenrePrefs();
 		
-//		for (String anime : animes) {
-//			AnimePage curr = new AnimePage(anime);
-//			curr.setGenreList();
-//			List<String> animeGenres = curr.getGenreList();
-//			if (genreMatch(animeGenres, genres) {
-//				curr.setRecommendedAnimeToFrequencyMap();
-//				Map<AnimePage, Integer> scores = curr.getRecommendedAnimeToFrequencyMap();
-//			}
-//		}
+		
+		try {
+			for (String anime : animes) {
+				AnimePage curr = new AnimePage(anime);
+				List<Genre> animeGenres = curr.getGenreList();
+				if (genreMatch(animeGenres, genres)) {
+					curr.setRecommendedAnimeToFrequencyMap();
+					Map<AnimePage, Integer> scores = curr.getRecommendedAnimeToFrequencyMap();
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("failed to get frequency map");
+		}
+		
 	}
 	
-	private boolean genreMatch(List<String> animeGenres, Set<String> prefGenres) {
-		for (String genre : prefGenres) {
+	private boolean genreMatch(List<Genre> animeGenres, Set<Genre> prefGenres) {
+		for (Genre genre : prefGenres) {
 			if (!animeGenres.contains(genre)) {
 				return false;
 			}

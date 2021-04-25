@@ -14,10 +14,25 @@ public class Recommendation {
 		Set<String> animes = user.getAnimesWatched();
 		Set<String> genres = user.getGenrePrefs();
 		
-		for (String anime : animes) {
-			
+//		for (String anime : animes) {
+//			AnimePage curr = new AnimePage(anime);
+//			curr.setGenreList();
+//			List<String> animeGenres = curr.getGenreList();
+//			if (genreMatch(animeGenres, genres) {
+//				curr.setRecommendedAnimeToFrequencyMap();
+//				Map<AnimePage, Integer> scores = curr.getRecommendedAnimeToFrequencyMap();
+//			}
+//		}
+	}
+	
+	private boolean genreMatch(List<String> animeGenres, Set<String> prefGenres) {
+		for (String genre : prefGenres) {
+			if (!animeGenres.contains(genre)) {
+				return false;
+			}
 		}
 		
+		return true;
 	}
 	
 	public List<String> getRecs() {

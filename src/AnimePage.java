@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.print.DocFlavor.URL;
+
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
@@ -28,18 +30,34 @@ public class AnimePage {
 
     /**
      * Constructor for AnimePage
-     * @param url A valid url
-     * @throws IOException if there is an issue with the url
+     * @param query A query to search for. Must be <= 100 characters
+     * @throws IllegalArgumentException If query > 100 characters
      */
-    public AnimePage(String url) throws IOException{
-        this.url = url;
-        doc = Jsoup.connect(url).get();
-        name = doc.title().replace(" - MyAnimeList.net", "").replace(" ", "_");
+    public AnimePage(String query) throws IllegalArgumentException{
 
-        genreList = new LinkedList<Genre>();
-        setGenreList();
+        if (query.length() > 100) {
+            throw new IllegalArgumentException();
+        }
 
-        recommendedAnimeToFrequencyMap = new HashMap<AnimePage, Integer>();
+        try {
+            doc = Jsoup.connect("https://myanimelist.net/anime.php?cat=anime&q="
+                    + query).get();
+            url =  doc.selectFirst("a.hoverinfo_trigger")
+                    .attr("abs:href");
+            
+            if (url == null) {
+                throw new IllegalArgumentException();
+            }
+            doc = Jsoup.connect(url).get();
+            name = doc.title().replace(" - MyAnimeList.net", "").replace(" ", "_");
+            
+            genreList = new LinkedList<Genre>();
+            setGenreList();
+            
+            recommendedAnimeToFrequencyMap = new HashMap<AnimePage, Integer>();
+
+        } catch (IOException e) {}
+
     }
     /**
      * Helper function to set the genreList of the AnimePage
@@ -147,18 +165,13 @@ public class AnimePage {
     }
     
     public static void main(String[] args) {
-        try {
-            AnimePage a = new AnimePage("https://myanimelist.net/anime/5114/"
-            +"Fullmetal_Alchemist__Brotherhood");
-            System.out.println(a.getName());
+        AnimePage a = new AnimePage("fullmetalasdf");
+        System.out.println(a.getName());
             
-            for (Genre g : a.getGenreList()) {
-                System.out.println(g);
-            }
-            //a.setRecommendedAnimeToFrequencyMap();
-            a.getImage();
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (Genre g : a.getGenreList()) {
+            System.out.println(g);
         }
+        //a.setRecommendedAnimeToFrequencyMap();
+        a.getImage();
     }
 }

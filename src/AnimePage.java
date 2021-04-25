@@ -1,12 +1,17 @@
 package src;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
+import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -31,7 +36,7 @@ public class AnimePage {
     public AnimePage(String url) throws IOException{
         this.url = url;
         doc = Jsoup.connect(url).get();
-        name = doc.title().replace(" - MyAnimeList.net", "");
+        name = doc.title().replace(" - MyAnimeList.net", "").replace(" ", "_");
 
         genreList = new LinkedList<Genre>();
         setGenreList();
@@ -111,6 +116,37 @@ public class AnimePage {
     public List<Genre> getGenreList() {
         return genreList;
     }
+
+    /**
+     * Downloads the image locally and gets the image's filepath
+     * @return filepath to image, null if error
+     */
+    public String getImage() {
+        
+        System.out.println(doc.title());
+        Element img = doc.selectFirst("img.lazyload");
+        String imgUrl = img.attr("data-src");
+
+        String fpath = "images/" + name + ".jpg";
+        try {
+            Response resultImageResponse = Jsoup.connect(imgUrl)
+                    .ignoreContentType(true).execute();
+            File f = new File(fpath);
+
+            if (f.exists()) {
+                return fpath;
+            } else {
+                FileOutputStream out = new FileOutputStream(f);
+                out.write(resultImageResponse.bodyAsBytes()); 
+                out.close();
+                return fpath;
+            }
+            
+        } catch (IOException e) {
+        }
+
+        return null;
+    }
     
     public static void main(String[] args) {
         try {
@@ -121,7 +157,8 @@ public class AnimePage {
             for (Genre g : a.getGenreList()) {
                 System.out.println(g);
             }
-            a.setRecommendedAnimeToFrequencyMap();
+            //a.setRecommendedAnimeToFrequencyMap();
+            a.getImage();
         } catch (IOException e) {
             e.printStackTrace();
         }

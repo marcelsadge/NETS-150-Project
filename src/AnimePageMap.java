@@ -1,7 +1,9 @@
 package src;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Maps url (string) to AnimePage to avoid repeating the same page multiple
@@ -37,5 +39,14 @@ public class AnimePageMap {
 
     public Boolean containsUrl(String url) {
         return UrlToAnimePageMap.containsKey(url);
+    }
+
+    public Set<String> getUrls() {
+        return UrlToAnimePageMap.keySet();
+    }
+
+    
+    public Collection<AnimePage> getAnimePages() {
+        return UrlToAnimePageMap.values();
     }
 }

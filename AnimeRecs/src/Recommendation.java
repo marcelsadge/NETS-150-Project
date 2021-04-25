@@ -12,6 +12,11 @@ public class Recommendation {
 	
 	public void updateRecommendations() {
 		Set<String> animes = user.getAnimesWatched();
+		Set<String> genres = user.getGenrePrefs();
+		
+		for (String anime : animes) {
+			
+		}
 		
 	}
 	

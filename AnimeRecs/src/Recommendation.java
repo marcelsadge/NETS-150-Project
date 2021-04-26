@@ -4,7 +4,7 @@ import java.util.*;
 public class Recommendation {
 	
 	private Profile user;
-	private HashMap<String, Integer> animeToScore;
+	private HashMap<String, Integer> animeScores;
 	private List<String> recsInOrder;
 	
 	public Recommendation(Profile user) {
@@ -15,19 +15,33 @@ public class Recommendation {
 		Set<String> animes = user.getAnimesWatched();
 		Set<Genre> genres = user.getGenrePrefs();
 		
+		for (String anime : animes) {
+			AnimePage animePage = new AnimePage(anime);
+			List<Genre> animeGenres = animePage.getGenreList();
+			if (genreMatch(animeGenres, genres)) {
+				updateScores(animePage, anime);
+			}
+			
+		}
 		
+	}
+	
+	private void updateScores(AnimePage animePage, String anime) {
 		try {
-			for (String anime : animes) {
-				AnimePage curr = new AnimePage(anime);
-				List<Genre> animeGenres = curr.getGenreList();
-				if (genreMatch(animeGenres, genres)) {
-					curr.setRecommendedAnimeToFrequencyMap();
-					Map<AnimePage, Integer> scores = curr.getRecommendedAnimeToFrequencyMap();
-				}
+			animePage.setRecommendedAnimeToFrequencyMap();
+			Map<AnimePage, Integer> scores = animePage.getRecommendedAnimeToFrequencyMap();
+			int scoreToAdd = scores.get(animePage);
+			if (animeScores.containsKey(anime)) {
+				int currScore = animeScores.get(anime);
+				animeScores.put(anime, currScore + scoreToAdd);
+			} else {
+				animeScores.put(anime, scoreToAdd);
 			}
 		} catch (IOException e) {
-			System.out.println("failed to get frequency map");
+			System.out.println("failed to get recommendations for: " + anime);
 		}
+
+		
 		
 	}
 	

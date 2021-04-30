@@ -27,7 +27,6 @@ public class Profile {
 			System.out.println("invalid score");
 			return;
 		}
-		
 		animes.put(animeName, score);
 	}
 	
@@ -37,6 +36,7 @@ public class Profile {
 	 * @param animeName The anime to be removed
 	 */
 	public void removeAnime(String animeName) {
+		animeName = animeName.replaceAll(" ", "_").toLowerCase();
 		animes.remove(animeName);
 	}
 	
@@ -84,6 +84,10 @@ public class Profile {
 		return new HashMap<String, Integer> (animes);
 	}
 	
+	/**
+	 * gets the username of the user
+	 * @return String username
+	 */
 	public String getUsername() {
 		return username;
 	}

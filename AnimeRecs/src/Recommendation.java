@@ -154,25 +154,6 @@ public class Recommendation {
 	}
 	
 	
-	// dummy test function
-	public static void placeInSortedArrayTest(String anime, HashMap <String, Integer> map, ArrayList<String> al) {
-		if (al.isEmpty()) {
-			al.add(anime);
-			return;
-		}
-		
-		for (int i = 0; i < al.size(); i++) {
-			String curr = al.get(i);
-			if (map.get(anime) >= map.get(curr)) {
-				al.add(i, anime);
-				return;
-			}
-		}
-		
-		// if anime was never added into the array, add it to the end
-		al.add(anime);
-	}
-	
 	/**
 	 * Gets the Map of the anime to their respective scores
 	 * @return Map of Anime to RecommendedFrequency
@@ -188,26 +169,5 @@ public class Recommendation {
 	public List<String> getRecs() {
 		return new LinkedList<String>(sortedRecs);
 	}
-	
-	
-	public static void main(String[] args) {
-		HashMap<String, Integer> map = new HashMap<String, Integer>();
-		ArrayList<String> al = new ArrayList<String>();
-		map.put("one piece", 1);
-		map.put("your mum", 100);
-		map.put("lololol", 55);
-		map.put("LOL", 99);
-		map.put("LOL2", 99);
-		map.put("zero", 0);
-		map.put("over 1000", 1000);
-		Set<String> animes = map.keySet();
-		for (String anime: animes) {
-			Recommendation.placeInSortedArrayTest(anime, map, al);
-		}
-		
-		System.out.println(al);
-		
-	}
-	
 
 }

@@ -21,6 +21,7 @@ public class AnimePage {
     
     private String name;
     private String url;
+    private String query;
     private Document doc;
     private double score;
     private int numEpisodes;
@@ -41,6 +42,11 @@ public class AnimePage {
             throw new IllegalArgumentException();
         }
 
+        this.query = query;
+        
+    }
+    
+    public void connect() {
         try {
             doc = Jsoup.connect("https://myanimelist.net/anime.php?cat=anime&q="
                     + query).get();
@@ -93,7 +99,6 @@ public class AnimePage {
         } catch (IOException e) {}
 
     }
-    
     /**
      * Helper function to set the genreList of the AnimePage
      */
@@ -227,6 +232,7 @@ public class AnimePage {
 
     public static void main(String[] args) {
         AnimePage a = new AnimePage("full metal");
+        a.connect();
         System.out.println("Anime Name: " + a.getName());
         
         System.out.println("Anime Score: " + a.getScore());

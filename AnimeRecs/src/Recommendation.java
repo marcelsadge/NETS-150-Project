@@ -6,7 +6,7 @@ public class Recommendation {
 	private Profile user; // the user we are making recommendations for 
 	
 	// maps each anime to the number of times it was recommended
-	private HashMap<String, Integer> animeScores; 
+	private HashMap<String, Integer> animeRecommendedFrequency; 
 	
 	// sorted list of anime from most recommended to least recommended
 	private ArrayList<String> sortedAnimes;
@@ -14,7 +14,7 @@ public class Recommendation {
 	// sorted list of anime recommendations based off of user standards
 	private ArrayList<String> sortedRecs;
 	
-	
+	private AnimePageMap animePageMap;
 	
 	/**
 	 * Constructor for a Recommendation
@@ -22,6 +22,9 @@ public class Recommendation {
 	 */
 	public Recommendation(Profile user) {
 		this.user = user;
+
+		animePageMap = AnimePageMap.getInstance();
+
 		updateRecommendations();
 	}
 	
@@ -31,50 +34,46 @@ public class Recommendation {
 	public void updateRecommendations() {
 		
 		// create a map to store the anime and it's corresponding score
-		animeScores = new HashMap<String, Integer>();
-		Set<String> animes = user.getAnimesWatched();
-		// get recommendations from each anime that the user has watched
-		for (String anime : animes) {
-			updateScores(anime);
+		animeRecommendedFrequency = new HashMap<String, Integer>();
+		
+		for (String query: user.getAnimesWatched()) {
+			animePageMap.addAnime(query);
+		}
+
+		List<AnimePage> baseAnimeList = new ArrayList<AnimePage>();
+		baseAnimeList.addAll(animePageMap.getAnimePages());
+		for (AnimePage ap : baseAnimeList) {
+			try {
+				ap.setRecommendedAnimeToFrequencyMap();
+				Map<AnimePage, Integer> numberRecsMap = ap.getRecommendedAnimeToFrequencyMap();
+
+				for (AnimePage recommended : numberRecsMap.keySet()) {
+					int scoreToAdd = numberRecsMap.get(recommended);
+					String animeName = recommended.getName();
+
+					if (animeRecommendedFrequency.containsKey(animeName)) {
+						int currScore = animeRecommendedFrequency.get(animeName);
+						animeRecommendedFrequency.put(animeName, currScore + scoreToAdd);
+					} else {
+						animeRecommendedFrequency.put(animeName, scoreToAdd);
+					}
+				}
+				
+			} catch (IOException e) {
+				System.out.println("Failed to get recommendations for: " 
+						+ ap.getName());
+			}
 		}
 		
 		sortRecommendations();
 	}
-	
-	
-	/**
-	 * Method that updates the scores for all the recommendations we receive from one anime
-	 * @param anime The anime that the user gets recommendations from
-	 */
-	private void updateScores(String anime) {
-		try {
-			AnimePage animePage = new AnimePage(anime);
-			animePage.setRecommendedAnimeToFrequencyMap();
-			Map<AnimePage, Integer> numberRecsMap = animePage.getRecommendedAnimeToFrequencyMap();
-			Set<AnimePage> animeRecs = numberRecsMap.keySet();
-			
-			for (AnimePage ap : animeRecs) {
-				int scoreToAdd = numberRecsMap.get(ap);
-				String animeName = ap.getName();
-				if (animeScores.containsKey(animeName)) {
-					int currScore = animeScores.get(animeName);
-					animeScores.put(animeName, currScore + scoreToAdd);
-				} else {
-					animeScores.put(animeName, scoreToAdd);
-				}
-			}
-		} catch (IOException e) {
-			System.out.println("failed to get recommendations for: " + anime);
-		}
-	}
-	
 	
 	/**
 	 * Helper method that sorts the animes recommended based on the number of time it was 
 	 * recommended, and then filter them based on the user's standards
 	 */
 	private void sortRecommendations() {
-		Set<String> animeRecs = animeScores.keySet();
+		Set<String> animeRecs = animeRecommendedFrequency.keySet();
 		Set<String> animesWatched = user.getAnimesWatched();
 		sortedAnimes = new ArrayList<String>();
 		sortedRecs = new ArrayList<String>();
@@ -108,7 +107,7 @@ public class Recommendation {
 		}
 		for (int i = 0; i < sortedAnimes.size(); i++) {
 			String curr = sortedAnimes.get(i);
-			if (animeScores.get(anime) >= animeScores.get(curr)) {
+			if (animeRecommendedFrequency.get(anime) >= animeRecommendedFrequency.get(curr)) {
 				sortedAnimes.add(i, anime);
 				return;
 			}
@@ -124,7 +123,7 @@ public class Recommendation {
 	 * @return boolean Whether or not the anime matched the user's standards
 	 */
 	private boolean matchUserStandards(String anime) {
-		AnimePage animePage = new AnimePage(anime);
+		AnimePage animePage = animePageMap.getByName(anime);
 		if (animePage.getEpisodes() > user.getMaxEpisodes()) {
 			return false;
 		} else if (animePage.getScore() < user.getMinScore()) {
@@ -159,7 +158,7 @@ public class Recommendation {
 	 * @return Map of Anime to RecommendedFrequency
 	 */
 	public Map<String, Integer> getAnimeScore() {
-		return new HashMap<String, Integer>(animeScores);
+		return new HashMap<String, Integer>(animeRecommendedFrequency);
 	}
 	
 	/**

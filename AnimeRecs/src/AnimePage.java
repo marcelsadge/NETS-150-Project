@@ -26,8 +26,10 @@ public class AnimePage {
     private int numEpisodes;
     private int releasedYear;
 
+    // all the genres this anime falls under
     private List<Genre> genreList; 
-    private Map<AnimePage, Integer> recommendedAnimeToFrequencyMap;
+    
+    private Map<String, Integer> recommendedAnimeToFrequencyMap;
 
     /**
      * Constructor for AnimePage
@@ -36,6 +38,9 @@ public class AnimePage {
      */
     public AnimePage(String query) throws IllegalArgumentException{
 
+    	// get our global anime page map
+    	AnimePageMap animePageMap = AnimePageMap.getInstance();
+    	
         if (query.length() > 100) {
             throw new IllegalArgumentException();
         }
@@ -46,8 +51,11 @@ public class AnimePage {
             url =  doc.selectFirst("a.hoverinfo_trigger")
                     .attr("abs:href");
             
+            // stores the anime page map in the global mapping
             if (url == null) {
                 throw new IllegalArgumentException();
+            } else if (!animePageMap.containsUrl(url)) {
+            	animePageMap.put(url, this);
             }
             
             doc = Jsoup.connect(url).get();
@@ -85,10 +93,11 @@ public class AnimePage {
         		releasedYear = Integer.MAX_VALUE;
         	}
             
+        	// sets the Genres for this anime
             genreList = new LinkedList<Genre>();
             setGenreList();
             
-            recommendedAnimeToFrequencyMap = new HashMap<AnimePage, Integer>();
+            recommendedAnimeToFrequencyMap = new HashMap<String, Integer>();
             
         } catch (IOException e) {}
     }
@@ -112,46 +121,46 @@ public class AnimePage {
     public void setRecommendedAnimeToFrequencyMap() throws IOException{
 
         doc = Jsoup.connect(url + "/userrecs").get();
+        
+        // select all the borderClasses that has animes inside of them
         Elements targets = doc.selectFirst("div.border_solid")
-                .nextElementSiblings();
-        Elements targetPages = targets.select("div.picSurround").select("a");
-        Elements targetNum = targets.select("a.js-similar-recommendations-button")
-                .select("strong");
-
-        AnimePage tempAnimePage = null;
-        AnimePageMap animePageMap = AnimePageMap.getInstance();
-        String url = null;
-
-        int frequency;
-
-        for (int i = 0; i < targetPages.size() && i <= 10; i++) {
-            
-            url = targetPages.get(i).attr("abs:href");
-
-            try {
-                frequency = Integer.parseInt(targetNum.get(i).text()) + 1;
-            } catch (IndexOutOfBoundsException e) {
-                frequency = 1;
-            }
-
-            
-            System.out.println(url);
+                .nextElementSiblings().select("div[class=borderClass]");
+        
+        for (Element t : targets) {
+        	
+        	// get the anime name
+        	Element animeNameTag = t.selectFirst("div[style~=margin-bottom.*]").selectFirst("a");
+        	String animeName = animeNameTag.text();
+        	
+        	// get the recommended frequency
+        	int frequency = 0;
+        	try {
+        		Element targetNum = t.selectFirst("a.js-similar-recommendations-button")
+            			.selectFirst("strong");
+        		frequency = Integer.parseInt(targetNum.text()) + 1;
+        	} catch (Exception e) {
+        		frequency = 1;
+        	}
+        	System.out.println(animeName);
             System.out.println(frequency);
-
-            if (animePageMap.containsUrl(url)) {
-                tempAnimePage = animePageMap.getByUrl(url);
-            } else {
-                tempAnimePage = new AnimePage(url);
-                animePageMap.put(url, tempAnimePage);
-            }
             
-            recommendedAnimeToFrequencyMap.put(tempAnimePage, frequency);
+            
+            recommendedAnimeToFrequencyMap.put(animeName, frequency);
+        	
         }
+        
     }
 
-    public Map<AnimePage, Integer> getRecommendedAnimeToFrequencyMap() {
+    
+    /**
+     * Returns a map of the an Anime to the number of times it was recommended
+     * @return Map of anime to recommended frequency
+     */
+    public Map<String, Integer> getRecommendedAnimeToFrequencyMap() {
         return recommendedAnimeToFrequencyMap;
     }
+
+
     
     /**
      * Gets the name of the anime
@@ -222,12 +231,16 @@ public class AnimePage {
         return null;
     }
     
+    /**
+     * Getter method for the url of this AnimePage
+     * @return The url for this page
+     */
     public String getUrl() {
         return url;
     }
 
     public static void main(String[] args) {
-        AnimePage a = new AnimePage("fairy tail");
+        AnimePage a = new AnimePage("one piece");
         System.out.println("Anime Name: " + a.getName());
         
         System.out.println("Anime Score: " + a.getScore());

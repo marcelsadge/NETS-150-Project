@@ -7,5 +7,9 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/Downloads/jsoup-1.13.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/git/NETS-150-Project/3rdparty/gs-algo-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/git/NETS-150-Project/3rdparty/gs-core-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/git/NETS-150-Project/3rdparty/gs-ui-javafx-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/git/NETS-150-Project/3rdparty/gs-ui-swing-2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

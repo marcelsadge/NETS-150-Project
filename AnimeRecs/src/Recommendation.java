@@ -6,7 +6,7 @@ public class Recommendation {
 	private Profile user; // the user we are making recommendations for 
 	
 	// maps each anime to the number of times it was recommended
-	private HashMap<String, Integer> animeRecommendedFrequency; 
+	private HashMap<String, Integer> animeRecFreq; 
 	
 	// sorted list of anime from most recommended to least recommended
 	private ArrayList<String> sortedAnimes;
@@ -34,38 +34,74 @@ public class Recommendation {
 	public void updateRecommendations() {
 		
 		// create a map to store the anime and it's corresponding score
-		animeRecommendedFrequency = new HashMap<String, Integer>();
+		animeRecFreq = new HashMap<String, Integer>();
 		
-		for (String query: user.getAnimesWatched()) {
-			animePageMap.addAnime(query);
+		Set<String> animes = user.getAnimesWatched();
+		
+		for (String anime: animes) {
+			updateScores(anime);
 		}
 
 		List<AnimePage> baseAnimeList = new ArrayList<AnimePage>();
 		baseAnimeList.addAll(animePageMap.getAnimePages());
-		for (AnimePage ap : baseAnimeList) {
-			try {
-				ap.setRecommendedAnimeToFrequencyMap();
-				Map<AnimePage, Integer> numberRecsMap = ap.getRecommendedAnimeToFrequencyMap();
-
-				for (AnimePage recommended : numberRecsMap.keySet()) {
-					int scoreToAdd = numberRecsMap.get(recommended);
-					String animeName = recommended.getName();
-
-					if (animeRecommendedFrequency.containsKey(animeName)) {
-						int currScore = animeRecommendedFrequency.get(animeName);
-						animeRecommendedFrequency.put(animeName, currScore + scoreToAdd);
-					} else {
-						animeRecommendedFrequency.put(animeName, scoreToAdd);
-					}
-				}
-				
-			} catch (IOException e) {
-				System.out.println("Failed to get recommendations for: " 
-						+ ap.getName());
-			}
-		}
+		
+		
+//		for (AnimePage ap : baseAnimeList) {
+//			try {
+//				ap.setRecommendedAnimeToFrequencyMap();
+//				Map<String, Integer> numberRecsMap = ap.getRecommendedAnimeToFrequencyMap();
+//
+//				for (AnimePage recommended : numberRecsMap.keySet()) {
+//					int scoreToAdd = numberRecsMap.get(recommended);
+//					String animeName = recommended.getName();
+//
+//					if (animeRecommendedFrequency.containsKey(animeName)) {
+//						int currScore = animeRecommendedFrequency.get(animeName);
+//						animeRecommendedFrequency.put(animeName, currScore + scoreToAdd);
+//					} else {
+//						animeRecommendedFrequency.put(animeName, scoreToAdd);
+//					}
+//				}
+//				
+//			} catch (IOException e) {
+//				System.out.println("Failed to get recommendations for: " 
+//						+ ap.getName());
+//			}
+//		}
 		
 		sortRecommendations();
+	}
+	
+	/**
+	 * 
+	 * @param anime
+	 * Method that updates the scores for all the recommendations we receive from one anime
+	 * @param anime The anime that the user gets recommendations from
+	 */
+	private void updateScores(String anime) {
+		try {
+			AnimePage animePage = new AnimePage(anime);
+
+			animePageMap.put(animePage.getUrl(), animePage);
+			
+			animePage.setRecommendedAnimeToFrequencyMap();
+
+			Map<String, Integer> numberRecsMap = animePage.getRecommendedAnimeToFrequencyMap();
+
+			Set<String> animeRecs = numberRecsMap.keySet();
+
+			for (String animeName : animeRecs) {
+				int scoreToAdd = numberRecsMap.get(animeName);
+				if (animeRecFreq.containsKey(animeName)) {
+					int currScore = animeRecFreq.get(animeName);
+					animeRecFreq.put(animeName, currScore + scoreToAdd);
+				} else {
+					animeRecFreq.put(animeName, scoreToAdd);
+				}
+			}
+		} catch (IOException e) {
+			System.out.println("failed to get recommendations for: " + anime);
+		}
 	}
 	
 	/**
@@ -73,7 +109,7 @@ public class Recommendation {
 	 * recommended, and then filter them based on the user's standards
 	 */
 	private void sortRecommendations() {
-		Set<String> animeRecs = animeRecommendedFrequency.keySet();
+		Set<String> animeRecs = animeRecFreq.keySet();
 		Set<String> animesWatched = user.getAnimesWatched();
 		sortedAnimes = new ArrayList<String>();
 		sortedRecs = new ArrayList<String>();
@@ -107,7 +143,7 @@ public class Recommendation {
 		}
 		for (int i = 0; i < sortedAnimes.size(); i++) {
 			String curr = sortedAnimes.get(i);
-			if (animeRecommendedFrequency.get(anime) >= animeRecommendedFrequency.get(curr)) {
+			if (animeRecFreq.get(anime) >= animeRecFreq.get(curr)) {
 				sortedAnimes.add(i, anime);
 				return;
 			}
@@ -123,7 +159,14 @@ public class Recommendation {
 	 * @return boolean Whether or not the anime matched the user's standards
 	 */
 	private boolean matchUserStandards(String anime) {
-		AnimePage animePage = animePageMap.getByName(anime);
+		AnimePage animePage;
+		if (animePageMap.containsName(anime)) {
+			animePage = animePageMap.getByName(anime);
+		} else {
+			animePage = new AnimePage(anime);
+			animePageMap.put(animePage.getUrl(), animePage);
+		}
+		
 		if (animePage.getEpisodes() > user.getMaxEpisodes()) {
 			return false;
 		} else if (animePage.getScore() < user.getMinScore()) {
@@ -158,7 +201,7 @@ public class Recommendation {
 	 * @return Map of Anime to RecommendedFrequency
 	 */
 	public Map<String, Integer> getAnimeScore() {
-		return new HashMap<String, Integer>(animeRecommendedFrequency);
+		return new HashMap<String, Integer>(animeRecFreq);
 	}
 	
 	/**
@@ -167,6 +210,20 @@ public class Recommendation {
 	 */
 	public List<String> getRecs() {
 		return new LinkedList<String>(sortedRecs);
+	}
+	
+	public static void main(String[] args) {
+		Profile user = new Profile("Bob");
+		user.addAnime("One_Piece", 10);
+		user.addAnime("Bleach", 10);
+
+		Recommendation userRec = new Recommendation(user);
+		userRec.updateRecommendations();
+		
+		System.out.println(userRec.getAnimeScore());
+		System.out.println(userRec.getRecs());
+		
+		
 	}
 
 }

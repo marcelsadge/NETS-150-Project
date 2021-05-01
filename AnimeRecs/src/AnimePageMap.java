@@ -51,14 +51,17 @@ public class AnimePageMap {
         return animePageList.get(nameList.indexOf(name));
     }
 
-    public Boolean containsUrl(String url) {
+    public boolean containsUrl(String url) {
         return urlList.contains(url);
+    }
+    
+    public boolean containsName(String name) {
+    	return nameList.contains(name);
     }
 
     public List<String> getUrls() {
         return urlList;
     }
-
     
     public List<AnimePage> getAnimePages() {
         return animePageList;

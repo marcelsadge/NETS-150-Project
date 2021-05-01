@@ -29,7 +29,6 @@ public class AnimePage {
     private List<Genre> genreList; 
     private Map<AnimePage, Integer> recommendedAnimeToFrequencyMap;
 
-    
     /**
      * Constructor for AnimePage
      * @param query A query to search for. Must be <= 100 characters
@@ -76,10 +75,11 @@ public class AnimePage {
         	
         	// sets the release year of the anime
         	String aired = doc.selectFirst("div[class=spaceit]:matches(Aired:.*)").text();
-        	Pattern pattern2 = Pattern.compile("Aired: \\w+ \\d+, (\\d+)");
+        	Pattern pattern2 = Pattern.compile("Aired: (\\w+ \\d+,)? (\\d+)");
         	Matcher m2 = pattern2.matcher(aired);
         	if (m2.find()) {
-        		releasedYear = Integer.parseInt(m2.group(1));
+        		releasedYear = Integer.parseInt(m2.group(2));
+        		System.out.println(releasedYear);
         	} else {
         		System.out.println("Release year not found");
         		releasedYear = Integer.MAX_VALUE;
@@ -91,7 +91,6 @@ public class AnimePage {
             recommendedAnimeToFrequencyMap = new HashMap<AnimePage, Integer>();
             
         } catch (IOException e) {}
-
     }
     
     /**
@@ -104,6 +103,7 @@ public class AnimePage {
             }
         }
     }
+    
     /**
      * Get a map of recommended AnimePages to frequency
      * @return a map of recommended AnimePages to frequency
@@ -134,6 +134,7 @@ public class AnimePage {
                 frequency = 1;
             }
 
+            
             System.out.println(url);
             System.out.println(frequency);
 
@@ -226,7 +227,7 @@ public class AnimePage {
     }
 
     public static void main(String[] args) {
-        AnimePage a = new AnimePage("full metal");
+        AnimePage a = new AnimePage("fairy tail");
         System.out.println("Anime Name: " + a.getName());
         
         System.out.println("Anime Score: " + a.getScore());
@@ -236,6 +237,7 @@ public class AnimePage {
         for (Genre g : a.getGenreList()) {
             System.out.println(g);
         }
+        
         try {
             a.setRecommendedAnimeToFrequencyMap();
         } catch (IOException e) {

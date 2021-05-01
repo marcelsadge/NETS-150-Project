@@ -11,6 +11,7 @@ public class AnimePageMap {
     private List<String> urlList;
     private List<AnimePage> animePageList;
     private List<String> nameList;
+    
     /**
      * Get pointer to AnimePageMap singleton
      * @return AnimePageMap instance
@@ -33,6 +34,7 @@ public class AnimePageMap {
         put(a.getUrl(), a);
     }
 
+    
     public void put(String url, AnimePage a) {
         if (!(urlList.contains(url))) {
             nameList.add(a.getName());

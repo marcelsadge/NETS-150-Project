@@ -1,12 +1,10 @@
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class Profile {
 	
 	private String username;
-	private HashMap<String, Integer> animes;
+	private HashSet<String> animes;
 	private HashSet<Genre> genrePrefs;
 	private double minScore;
 	private int maxEpisodes;
@@ -15,7 +13,7 @@ public class Profile {
 	
 	public Profile(String username) {
 		this.username = username;
-		animes = new HashMap<String, Integer>();
+		animes = new HashSet<String>();
 		genrePrefs = new HashSet<Genre>();
 		maxEpisodes = Integer.MAX_VALUE;
 		minScore = Integer.MIN_VALUE;
@@ -24,14 +22,18 @@ public class Profile {
 	/**
 	 * Stores the anime and corresponding score to the hashMap
 	 * @param animeName The Name of the anime that the User watched
-	 * @param score The rating that the user gives to the anime 1-10
 	 */
 	public void addAnime (String animeName, int score) {
-		if (score < 0 || score > 10) {
-			System.out.println("invalid score");
-			return;
-		}
-		animes.put(animeName, score);
+		animes.add(animeName);
+	}
+	
+	/**
+	 * Stores the anime and corresponding score to the hashMap
+	 * @param animeName The Name of the anime that the User watched
+	 * @param score The rating that the user gives to the anime 1-10
+	 */
+	public void addAnime (String animeName) {
+		animes.add(animeName);
 	}
 	
 
@@ -119,16 +121,9 @@ public class Profile {
 	 * @return Set of animes watched by the user
 	 */
 	public Set<String> getAnimesWatched() {
-		return new HashSet<String>(animes.keySet());
+		return new HashSet<String>(animes);
 	}
 	
-	/**
-	 * get all the animes watched with their corresponding scores
-	 * @return Map containing animes with their corresponding scores
-	 */
-	public Map<String, Integer> getAnimeScores() {
-		return new HashMap<String, Integer> (animes);
-	}
 	
 	/**
 	 * gets the username of the user

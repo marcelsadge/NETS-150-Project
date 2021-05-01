@@ -96,7 +96,7 @@ public class AnimePage {
             genreList = new LinkedList<Genre>();
             setGenreList();
             
-            System.out.println("opened new page");
+            System.out.println("Opened Page: " + name);
             
             recommendedAnimeToFrequencyMap = new HashMap<String, Integer>();
             

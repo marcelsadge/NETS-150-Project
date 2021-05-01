@@ -16,6 +16,8 @@ public class Recommendation {
 	
 	private AnimePageMap animePageMap;
 	
+	private Set<String> animesWatched;
+	
 	/**
 	 * Constructor for a Recommendation
 	 * @param user The user we are recommending anime to
@@ -38,6 +40,8 @@ public class Recommendation {
 		
 		Set<String> animes = user.getAnimesWatched();
 		
+		animesWatched = new HashSet<String>();
+		
 		for (String anime: animes) {
 			updateScores(anime);
 		}
@@ -52,11 +56,13 @@ public class Recommendation {
 	private void updateScores(String anime) {
 		try {
 			AnimePage animePage = new AnimePage(anime);
-
+			
 			animePageMap.put(animePage.getUrl(), animePage);
 			
 			animePage.setRecommendedAnimeToFrequencyMap();
 
+			animesWatched.add(animePage.getName());
+			
 			Map<String, Integer> numberRecsMap = animePage.getRecommendedAnimeToFrequencyMap();
 
 			Set<String> animeRecs = numberRecsMap.keySet();
@@ -81,7 +87,6 @@ public class Recommendation {
 	 */
 	private void sortRecommendations() {
 		Set<String> animeRecs = animeRecFreq.keySet();
-		Set<String> animesWatched = user.getAnimesWatched();
 		sortedAnimes = new ArrayList<String>();
 		sortedRecs = new ArrayList<String>();
 		for (String anime : animeRecs) {
@@ -96,6 +101,7 @@ public class Recommendation {
 			if (sortedRecs.size() == 3) {
 				break;
 			}
+			
 			if (matchUserStandards(anime)) {
 				sortedRecs.add(anime);
 			}
@@ -187,6 +193,7 @@ public class Recommendation {
 		Profile user = new Profile("Bob");
 		user.addAnime("One Piece", 10);
 		user.addAnime("Bleach", 10);
+		user.addAnime("Fairy Tail TV", 10);
 		user.setMaxEpisodes(200);
 		user.setMinScore(6.0);
 		user.setOldestAnime(2000);
@@ -197,7 +204,7 @@ public class Recommendation {
 		userRec.updateRecommendations();
 		System.out.println(userRec.getAnimeScore());
 		System.out.println(userRec.getRecs());
-		System.out.println("number of pages opened:" + AnimePageMap.getInstance().size());
+		System.out.println("number of pages stored:" + AnimePageMap.getInstance().size());
 	}
 
 }

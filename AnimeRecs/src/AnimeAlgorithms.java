@@ -1,9 +1,9 @@
 
 public class AnimeAlgorithms {
 	
-	private AnimeNode graph;
+	private AnimeVisualization graph;
 	
-	public AnimeAlgorithms(AnimeNode graph) {
+	public AnimeAlgorithms(AnimeVisualization graph) {
 		this.graph = graph;
 	}
 }

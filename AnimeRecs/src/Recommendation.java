@@ -144,6 +144,7 @@ public class Recommendation {
 			Recommendation.placeInSortedArrayTest(anime, map, al);
 		}
 		
+		System.out.println(Integer.parseInt("101"));
 		System.out.println(al);
 		
 	}

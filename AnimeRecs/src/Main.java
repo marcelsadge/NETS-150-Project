@@ -4,7 +4,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		Profile user = new Profile("Bob");
-		user.addAnime("One_Piece", 10);
+		user.addAnime("bleach", 10);
 		
 		Recommendation userRec = new Recommendation(user);
 		

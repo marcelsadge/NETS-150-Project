@@ -189,7 +189,7 @@ public class AnimePage {
      * @return A list of Genres
      */
     public List<Genre> getGenreList() {
-        return genreList;
+        return new LinkedList<Genre>(genreList);
     }
 
     /**

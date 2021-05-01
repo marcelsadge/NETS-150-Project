@@ -10,6 +10,7 @@ public class Profile {
 	private HashSet<Genre> genrePrefs;
 	private double minScore;
 	private int maxEpisodes;
+	private int oldestYear;
 	
 	
 	public Profile(String username) {
@@ -68,7 +69,14 @@ public class Profile {
 	 * @param score The minimum score for an anime that the user would watch
 	 */
 	public void setMinScore(double score) {
-		this.minScore = score;
+		if (score < 0) {
+			score = 0;
+		} else if (score > 10) {
+			score = 10;
+		} else {
+			this.minScore = score;
+		}
+		
 	}
 	
 	
@@ -77,7 +85,23 @@ public class Profile {
 	 * @param max The maximum number of episodes user is willing to watch
 	 */
 	public void setMaxEpisodes(int max) {
-		this.maxEpisodes = max;
+		if (max <= 0) {
+			this.maxEpisodes = 1;
+		} else {
+			this.maxEpisodes = max;
+		}
+	}
+	
+	/**
+	 * Set the oldest release year the user would watch
+	 * @param year The oldest release year for an anime
+	 */
+	public void setOldestAnime(int year) {
+		if (year > 2021) {
+			this.oldestYear = 2021;
+		} else {
+			this.oldestYear = year;
+		}
 	}
 	
 	/**
@@ -127,6 +151,14 @@ public class Profile {
 	 */
 	public int getMaxEpisodes() {
 		return this.maxEpisodes;
+	}
+	
+	/**
+	 * Gets the oldest year of an anime that the user is willing to watch
+	 * @return The oldest release year for the anime
+	 */
+	public int getOldestAnimeYear() {
+		return this.oldestYear;
 	}
 	
 }

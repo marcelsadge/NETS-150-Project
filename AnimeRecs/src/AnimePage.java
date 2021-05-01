@@ -87,7 +87,6 @@ public class AnimePage {
         	Matcher m2 = pattern2.matcher(aired);
         	if (m2.find()) {
         		releasedYear = Integer.parseInt(m2.group(2));
-        		System.out.println(releasedYear);
         	} else {
         		System.out.println("Release year not found");
         		releasedYear = Integer.MAX_VALUE;
@@ -96,6 +95,8 @@ public class AnimePage {
         	// sets the Genres for this anime
             genreList = new LinkedList<Genre>();
             setGenreList();
+            
+            System.out.println("opened new page");
             
             recommendedAnimeToFrequencyMap = new HashMap<String, Integer>();
             
@@ -141,10 +142,8 @@ public class AnimePage {
         	} catch (Exception e) {
         		frequency = 1;
         	}
-        	System.out.println(animeName);
-            System.out.println(frequency);
-            
-            
+        	
+
             recommendedAnimeToFrequencyMap.put(animeName, frequency);
         	
         }
@@ -242,7 +241,6 @@ public class AnimePage {
     public static void main(String[] args) {
         AnimePage a = new AnimePage("one piece");
         System.out.println("Anime Name: " + a.getName());
-        
         System.out.println("Anime Score: " + a.getScore());
         System.out.println("Number Of Episodes: " + a.getEpisodes());
         System.out.println("Release Year: " + a.getReleasedYear());

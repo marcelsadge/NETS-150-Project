@@ -41,40 +41,11 @@ public class Recommendation {
 		for (String anime: animes) {
 			updateScores(anime);
 		}
-
-		List<AnimePage> baseAnimeList = new ArrayList<AnimePage>();
-		baseAnimeList.addAll(animePageMap.getAnimePages());
-		
-		
-//		for (AnimePage ap : baseAnimeList) {
-//			try {
-//				ap.setRecommendedAnimeToFrequencyMap();
-//				Map<String, Integer> numberRecsMap = ap.getRecommendedAnimeToFrequencyMap();
-//
-//				for (AnimePage recommended : numberRecsMap.keySet()) {
-//					int scoreToAdd = numberRecsMap.get(recommended);
-//					String animeName = recommended.getName();
-//
-//					if (animeRecommendedFrequency.containsKey(animeName)) {
-//						int currScore = animeRecommendedFrequency.get(animeName);
-//						animeRecommendedFrequency.put(animeName, currScore + scoreToAdd);
-//					} else {
-//						animeRecommendedFrequency.put(animeName, scoreToAdd);
-//					}
-//				}
-//				
-//			} catch (IOException e) {
-//				System.out.println("Failed to get recommendations for: " 
-//						+ ap.getName());
-//			}
-//		}
 		
 		sortRecommendations();
 	}
 	
 	/**
-	 * 
-	 * @param anime
 	 * Method that updates the scores for all the recommendations we receive from one anime
 	 * @param anime The anime that the user gets recommendations from
 	 */
@@ -120,9 +91,9 @@ public class Recommendation {
 			}
 		}
 		
-		// get the top 5 recommended animes that also meet user standards
+		// get the top 3 recommended animes that also meet user standards
 		for (String anime : sortedAnimes) {	
-			if (sortedRecs.size() == 10) {
+			if (sortedRecs.size() == 3) {
 				break;
 			}
 			if (matchUserStandards(anime)) {
@@ -214,16 +185,19 @@ public class Recommendation {
 	
 	public static void main(String[] args) {
 		Profile user = new Profile("Bob");
-		user.addAnime("One_Piece", 10);
+		user.addAnime("One Piece", 10);
 		user.addAnime("Bleach", 10);
+		user.setMaxEpisodes(200);
+		user.setMinScore(6.0);
+		user.setOldestAnime(2000);
+		user.addGenrePref("Action");
+		System.out.println(user.getGenrePrefs());
 
 		Recommendation userRec = new Recommendation(user);
 		userRec.updateRecommendations();
-		
 		System.out.println(userRec.getAnimeScore());
 		System.out.println(userRec.getRecs());
-		
-		
+		System.out.println("number of pages opened:" + AnimePageMap.getInstance().size());
 	}
 
 }

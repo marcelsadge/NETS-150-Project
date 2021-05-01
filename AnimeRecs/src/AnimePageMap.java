@@ -66,4 +66,8 @@ public class AnimePageMap {
     public List<AnimePage> getAnimePages() {
         return animePageList;
     }
+    
+    public int size() {
+    	return animePageList.size();
+    }
 }

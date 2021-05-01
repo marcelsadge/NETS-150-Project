@@ -53,6 +53,7 @@ public class Profile {
 		genrePrefs.add(Genre.fromString(genre));
 	}
 	
+	
 	/**
 	 * remove a genre preference in the set
 	 * @param genre The genre preference to be removed

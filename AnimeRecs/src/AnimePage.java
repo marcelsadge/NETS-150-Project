@@ -26,6 +26,7 @@ public class AnimePage {
     private List<Genre> genreList; 
     private Map<AnimePage, Integer> recommendedAnimeToFrequencyMap;
 
+    
     /**
      * Constructor for AnimePage
      * @param query A query to search for. Must be <= 100 characters

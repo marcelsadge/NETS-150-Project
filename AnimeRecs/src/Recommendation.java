@@ -5,7 +5,6 @@ public class Recommendation {
 	
 	private Profile user;
 	private HashMap<String, Integer> animeScores;
-	
 	private ArrayList<String> sortedAnimes;
 	private ArrayList<String> recs;
 	
@@ -70,13 +69,13 @@ public class Recommendation {
 	
 	private void placeInSortedList(String anime) {
 		if (sortedAnimes.isEmpty()) {
-			sortedAnimes.add(anime + animeScores.get(anime));
+			sortedAnimes.add(anime);
 			return;
 		}
 		for (int i = 0; i < sortedAnimes.size(); i++) {
 			String curr = sortedAnimes.get(i);
 			if (animeScores.get(anime) >= animeScores.get(curr)) {
-				sortedAnimes.add(i, anime + animeScores.get(anime));
+				sortedAnimes.add(i, anime);
 				return;
 			}
 		}
@@ -85,16 +84,40 @@ public class Recommendation {
 		sortedAnimes.add(anime);
 	}
 	
+	public static void placeInSortedArrayTest(String anime, HashMap <String, Integer> map, ArrayList<String> al) {
+		if (al.isEmpty()) {
+			al.add(anime);
+			return;
+		}
+		
+		for (int i = 0; i < al.size(); i++) {
+			String curr = al.get(i);
+			if (map.get(anime) >= map.get(curr)) {
+				al.add(i, anime);
+				return;
+			}
+		}
+		
+		// if anime was never added into the array, add it to the end
+		al.add(anime);
+	}
+	
 
-//	private boolean genreMatch(List<Genre> animeGenres, Set<Genre> prefGenres) {
-//		for (Genre genre : prefGenres) {
-//			if (!animeGenres.contains(genre)) {
-//				return false;
-//			}
-//		}
-//		
-//		return true;
-//	}
+	private boolean genreMatch(List<Genre> animeGenres, Set<Genre> prefGenres) {
+		for (Genre genre : prefGenres) {
+			if (!animeGenres.contains(genre)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	private boolean matchUserStandards(String anime) {
+		user.getMinScore();
+		genreMatch(null, null);
+		return true;
+	}
 	
 	public Map<String, Integer> getAnimeScore() {
 		System.out.println(sortedAnimes);
@@ -103,6 +126,26 @@ public class Recommendation {
 	
 	public List<String> getRecs() {
 		return new LinkedList<String>(recs);
+	}
+	
+	public static void main(String[] args) {
+		
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
+		ArrayList<String> al = new ArrayList<String>();
+		map.put("one piece", 1);
+		map.put("your mum", 100);
+		map.put("lololol", 55);
+		map.put("LOL", 99);
+		map.put("LOL2", 99);
+		map.put("zero", 0);
+		map.put("over 1000", 1000);
+		Set<String> animes = map.keySet();
+		for (String anime: animes) {
+			Recommendation.placeInSortedArrayTest(anime, map, al);
+		}
+		
+		System.out.println(al);
+		
 	}
 	
 

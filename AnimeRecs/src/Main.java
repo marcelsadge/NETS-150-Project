@@ -41,7 +41,7 @@ public class Main extends JFrame {
 			}
 			
 			if (name.equals("map")) {
-				createMapOfUsers();
+				//createMapOfUsers();
 				continue;
 			}
 			

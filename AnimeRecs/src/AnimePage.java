@@ -57,6 +57,7 @@ public class AnimePage {
         } catch (IOException e) {}
 
     }
+    
     /**
      * Helper function to set the genreList of the AnimePage
      */

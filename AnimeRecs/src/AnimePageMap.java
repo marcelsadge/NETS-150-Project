@@ -32,6 +32,7 @@ public class AnimePageMap {
     public void addAnime(String query) {
         AnimePage a = new AnimePage(query);
         put(a.getUrl(), a);
+        a.connect();
     }
 
     

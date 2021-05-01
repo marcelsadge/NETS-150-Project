@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -74,6 +77,7 @@ public class Main extends JFrame {
 		}
 	}
 	
+	/*
 	public static void createMapOfUsers() {
 		System.setProperty("org.graphstream.ui", "swing");
 		Graph graph = new MultiGraph("Anime User Map");
@@ -84,6 +88,9 @@ public class Main extends JFrame {
 		
 		
 		graph.display();
+		Profile user = new Profile("Bob");
+		Scanner scanner = new Scanner(System.in);
+		user.addAnime("bleach", 10);
 	}
-
+	*/
 }

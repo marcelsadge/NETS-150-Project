@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.print.DocFlavor.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
@@ -21,7 +21,11 @@ public class AnimePage {
     
     private String name;
     private String url;
+    private String query;
     private Document doc;
+    private double score;
+    private int numEpisodes;
+    private int releasedYear;
 
     private List<Genre> genreList; 
     private Map<AnimePage, Integer> recommendedAnimeToFrequencyMap;
@@ -38,6 +42,11 @@ public class AnimePage {
             throw new IllegalArgumentException();
         }
 
+        this.query = query;
+        
+    }
+    
+    public void connect() {
         try {
             doc = Jsoup.connect("https://myanimelist.net/anime.php?cat=anime&q="
                     + query).get();
@@ -47,18 +56,49 @@ public class AnimePage {
             if (url == null) {
                 throw new IllegalArgumentException();
             }
+            
             doc = Jsoup.connect(url).get();
-            name = doc.title().replace(" - MyAnimeList.net", "").replace(" ", "_");
+            
+            // gets the name of the anime
+            name = doc.select("h1[class=title-name h1_bold_none]").text();
+            
+            // gets the score of the anime if it is available
+            String scoreStr = doc.select("div[class~=score-label score-.*]").text();
+            if (scoreStr.equals("N/A")) {
+            	score = 0;
+            } else {
+            	score = Double.parseDouble(scoreStr);
+            }
+            
+            // sets the total number of episodes in the anime, max integer value if unknown
+            String episodes = doc.selectFirst("div[class=spaceit]:matches(Episodes:.*)").text();
+            Pattern pattern1 = Pattern.compile("Episodes: (\\d+)");
+        	Matcher m1 = pattern1.matcher(episodes);
+        	if (m1.find()) {
+        		numEpisodes = Integer.parseInt(m1.group(1));
+        	} else {
+        		numEpisodes = Integer.MAX_VALUE;
+        	}
+        	
+        	// sets the release year of the anime
+        	String aired = doc.selectFirst("div[class=spaceit]:matches(Aired:.*)").text();
+        	Pattern pattern2 = Pattern.compile("Aired: \\w+ \\d+, (\\d+)");
+        	Matcher m2 = pattern2.matcher(aired);
+        	if (m2.find()) {
+        		releasedYear = Integer.parseInt(m2.group(1));
+        	} else {
+        		System.out.println("Release year not found");
+        		releasedYear = Integer.MAX_VALUE;
+        	}
             
             genreList = new LinkedList<Genre>();
             setGenreList();
             
             recommendedAnimeToFrequencyMap = new HashMap<AnimePage, Integer>();
-
+            
         } catch (IOException e) {}
 
     }
-    
     /**
      * Helper function to set the genreList of the AnimePage
      */
@@ -89,7 +129,7 @@ public class AnimePage {
 
         int frequency;
 
-        for (int i = 0; i < targetPages.size(); i++) {
+        for (int i = 0; i < targetPages.size() && i <= 10; i++) {
             
             url = targetPages.get(i).attr("abs:href");
 
@@ -103,7 +143,7 @@ public class AnimePage {
             System.out.println(frequency);
 
             if (animePageMap.containsUrl(url)) {
-                tempAnimePage = animePageMap.get(url);
+                tempAnimePage = animePageMap.getByUrl(url);
             } else {
                 tempAnimePage = new AnimePage(url);
                 animePageMap.put(url, tempAnimePage);
@@ -124,13 +164,36 @@ public class AnimePage {
     public String getName() {
         return name;
     }
+    
+    /**
+     * Gets the name of the anime
+     * @return The name of the anime
+    */
+    public double getScore() {
+    	return score;
+    }
+    
+    /**
+     * Gets the number of episodes in the anime
+     * @return The number of episodes
+    */
+    public int getEpisodes() {
+    	return numEpisodes;
+    }
 
+    /**
+     * Gets the year the anime was released
+     * @return The year the anime was released
+     */
+    public int getReleasedYear() {
+    	return releasedYear;
+    }
     /**
      * Gets the list of genres of the anime
      * @return A list of Genres
      */
     public List<Genre> getGenreList() {
-        return genreList;
+        return new LinkedList<Genre>(genreList);
     }
 
     /**
@@ -143,7 +206,7 @@ public class AnimePage {
         Element img = doc.selectFirst("img.lazyload");
         String imgUrl = img.attr("data-src");
 
-        String fpath = "images/" + name + ".jpg";
+        String fpath = "images/" + name.replace(" ", "_") + ".jpg";
         try {
             Response resultImageResponse = Jsoup.connect(imgUrl)
                     .ignoreContentType(true).execute();
@@ -160,18 +223,30 @@ public class AnimePage {
             
         } catch (IOException e) {
         }
-
         return null;
     }
     
+    public String getUrl() {
+        return url;
+    }
+
     public static void main(String[] args) {
-        AnimePage a = new AnimePage("fullmetalasdf");
-        System.out.println(a.getName());
-            
+        AnimePage a = new AnimePage("full metal");
+        a.connect();
+        System.out.println("Anime Name: " + a.getName());
+        
+        System.out.println("Anime Score: " + a.getScore());
+        System.out.println("Number Of Episodes: " + a.getEpisodes());
+        System.out.println("Release Year: " + a.getReleasedYear());
+        
         for (Genre g : a.getGenreList()) {
             System.out.println(g);
         }
-        //a.setRecommendedAnimeToFrequencyMap();
+        try {
+            a.setRecommendedAnimeToFrequencyMap();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         a.getImage();
     }
 }

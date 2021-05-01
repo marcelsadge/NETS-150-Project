@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.print.DocFlavor.URL;
-
 import org.jsoup.Jsoup;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
@@ -52,6 +50,7 @@ public class AnimePage {
             if (url == null) {
                 throw new IllegalArgumentException();
             }
+            
             doc = Jsoup.connect(url).get();
             
             // gets the name of the anime
@@ -90,7 +89,7 @@ public class AnimePage {
             setGenreList();
             
             recommendedAnimeToFrequencyMap = new HashMap<AnimePage, Integer>();
-
+            
         } catch (IOException e) {}
 
     }
@@ -125,7 +124,7 @@ public class AnimePage {
 
         int frequency;
 
-        for (int i = 0; i < targetPages.size(); i++) {
+        for (int i = 0; i < targetPages.size() && i <= 10; i++) {
             
             url = targetPages.get(i).attr("abs:href");
 
@@ -139,7 +138,7 @@ public class AnimePage {
             System.out.println(frequency);
 
             if (animePageMap.containsUrl(url)) {
-                tempAnimePage = animePageMap.get(url);
+                tempAnimePage = animePageMap.getByUrl(url);
             } else {
                 tempAnimePage = new AnimePage(url);
                 animePageMap.put(url, tempAnimePage);
@@ -202,7 +201,7 @@ public class AnimePage {
         Element img = doc.selectFirst("img.lazyload");
         String imgUrl = img.attr("data-src");
 
-        String fpath = "images/" + name + ".jpg";
+        String fpath = "images/" + name.replace(" ", "_") + ".jpg";
         try {
             Response resultImageResponse = Jsoup.connect(imgUrl)
                     .ignoreContentType(true).execute();
@@ -222,18 +221,26 @@ public class AnimePage {
         return null;
     }
     
+    public String getUrl() {
+        return url;
+    }
+
     public static void main(String[] args) {
         AnimePage a = new AnimePage("full metal");
         System.out.println("Anime Name: " + a.getName());
+        
         System.out.println("Anime Score: " + a.getScore());
         System.out.println("Number Of Episodes: " + a.getEpisodes());
         System.out.println("Release Year: " + a.getReleasedYear());
         
-            
         for (Genre g : a.getGenreList()) {
             System.out.println(g);
         }
-        //a.setRecommendedAnimeToFrequencyMap();
+        try {
+            a.setRecommendedAnimeToFrequencyMap();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         a.getImage();
     }
 }

@@ -191,12 +191,29 @@ public class Recommendation {
 	
 	public static void main(String[] args) {
 		Profile user = new Profile("Bob");
-		user.addAnime("One Piece", 10);
-		user.addAnime("Bleach", 10);
-		user.addAnime("Fairy Tail TV", 10);
+		user.addAnime("One Piece");
+		user.addAnime("Bleach");
+		user.addAnime("Fairy Tail TV");
+		user.addAnime("Darling in the Franxx");
+		user.addAnime("Pokemon");
+		user.addAnime("Dragon Ball");
+		user.addAnime("Hunter x Hunter");
+		user.addAnime("Soul Eater");
+		user.addAnime("Black Clover");
+		user.addAnime("Boku no Hero Academia");
+		user.addAnime("Ao no Exorcist");
+		user.addAnime("One Punch Man");
+		user.addAnime("Nanatsu no Taizai");
+		user.addAnime("Noragami");
+		user.addAnime("Mob Psycho 100");
+		user.addAnime("Saiki Kusuo No");
+		user.addAnime("Kimetsu no Yaiba");
+		user.addAnime("Jujutsu Kaisen (TV)");
+		user.addAnime("Ansatsu Kyoushitsu");
+		user.addAnime("Shingeki no Kyojin");
 		user.setMaxEpisodes(200);
-		user.setMinScore(6.0);
-		user.setOldestAnime(2000);
+		user.setMinScore(8.0);
+		user.setOldestAnime(2015);
 		user.addGenrePref("Action");
 		System.out.println(user.getGenrePrefs());
 

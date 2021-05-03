@@ -23,18 +23,20 @@ public class AnimePageMap {
         return instance;
     }
 
+    /**
+     * Constructor for AnimePageMap
+     */
     private AnimePageMap() {
         urlList = new ArrayList<String>();
         animePageList = new ArrayList<AnimePage>();
         nameList = new ArrayList<String>();
     }
-
-    public void addAnime(String query) {
-        AnimePage a = new AnimePage(query);
-        put(a.getUrl(), a);
-    }
-
     
+    /**
+     * Maps an url to an AnimePage
+     * @param url Url to be put
+     * @param a AnimePage to be put
+     */
     public void put(String url, AnimePage a) {
         if (!(urlList.contains(url))) {
             nameList.add(a.getName());
@@ -43,30 +45,36 @@ public class AnimePageMap {
         }
     }
 
-    public AnimePage getByUrl(String url) {
-        return animePageList.get(urlList.indexOf(url));
-    }
-
+    /**
+     * Returns an animePage mapped to a specific name
+     * @param name Target name
+     * @return AnimePage mapped to name
+     */
     public AnimePage getByName(String name) {
         return animePageList.get(nameList.indexOf(name));
     }
 
+    /**
+     * Returns whether the AnimePageMap contains the target anime by name
+     * @param url URL to be checked
+     * @return true if name is present
+     */
     public boolean containsUrl(String url) {
         return urlList.contains(url);
     }
-    
+    /**
+     * Returns whether the AnimePageMap contains the target anime by name
+     * @param name Name to be checked
+     * @return true if name is present
+     */
     public boolean containsName(String name) {
     	return nameList.contains(name);
     }
-
-    public List<String> getUrls() {
-        return urlList;
-    }
     
-    public List<AnimePage> getAnimePages() {
-        return animePageList;
-    }
-    
+    /**
+     * Returns the size of the AnimePageMap
+     * @return size of AnimePageMap
+     */
     public int size() {
     	return animePageList.size();
     }

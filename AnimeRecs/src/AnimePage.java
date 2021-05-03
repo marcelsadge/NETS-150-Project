@@ -34,14 +34,14 @@ public class AnimePage {
     /**
      * Constructor for AnimePage
      * @param query A query to search for. Must be <= 100 characters
-     * @throws IllegalArgumentException If query > 100 characters
+     * @throws IllegalArgumentException If query > 100 or < 3 characters long
      */
     public AnimePage(String query) throws IllegalArgumentException{
 
     	// get our global anime page map
     	AnimePageMap animePageMap = AnimePageMap.getInstance();
     	
-        if (query.length() > 100) {
+        if (query.length() > 100 || query.length() < 3) {
             throw new IllegalArgumentException();
         }
 
@@ -142,15 +142,12 @@ public class AnimePage {
         	} catch (Exception e) {
         		frequency = 1;
         	}
-        	
 
             recommendedAnimeToFrequencyMap.put(animeName, frequency);
-        	
         }
         
     }
 
-    
     /**
      * Returns a map of the an Anime to the number of times it was recommended
      * @return Map of anime to recommended frequency
@@ -159,8 +156,6 @@ public class AnimePage {
         return recommendedAnimeToFrequencyMap;
     }
 
-
-    
     /**
      * Gets the name of the anime
      * @return The name of the anime

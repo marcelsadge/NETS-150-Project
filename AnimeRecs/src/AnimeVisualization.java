@@ -1,22 +1,45 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+
+import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.algorithm.PageRank;
+import org.graphstream.graph.ElementNotFoundException;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.Path;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
 
-public class AnimeVisualization {
+public class AnimeVisualization extends JFrame{
+	
+	static Graph graph;
+	
+	AnimeVisualization(List<String> path) {
+		JList<String> displayList = new JList<>(path.toArray(new String[0]));
+		JScrollPane scrollPane = new JScrollPane(displayList);
+		
+		getContentPane().add(scrollPane);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        pack();
+        setVisible(true);
+	}
+	
 	public static void main(String[] args) {
 		System.setProperty("org.graphstream.ui", "swing");
-		Graph graph = new MultiGraph("test");
+		graph = new MultiGraph("test");
 		graph.setAttribute("ui.antialias", true);
 		graph.setAttribute("ui.stylesheet", 
-				"node {fill-mode: dyn-plain; size-mode: dyn-size; text-size: 20;} edge {fill-color:black;}");
+				"node {fill-mode: dyn-plain; size-mode: dyn-size; text-size: 20;} "
+				+ "edge {fill-color:black;}");
 		graph.display();
 		
 		SpriteManager sman = new SpriteManager(graph);
@@ -34,7 +57,7 @@ public class AnimeVisualization {
 		
 		bobProf2.addAnime("bleach", 6);
 		bobProf2.addAnime("one piece", 7);
-		bobProf2.addAnime("MHA", 8);
+		bobProf2.addAnime("my hero academia", 8);
 		bobProf2.addAnime("dragon ball", 7);
 		
 		String name3 = "bob3";
@@ -46,14 +69,25 @@ public class AnimeVisualization {
 		bobProf3.addAnime("Shield Hero", 3);
 		bobProf3.addAnime("bleach", 4);
 		
+		String name4 = "bob4";
+		
+		Profile bobProf4 = new Profile(name4);
+		
+		bobProf4.addAnime("Code Geass", 2);
+		bobProf4.addAnime("my hero academia", 2);
+		
+		String name5 = "bob5";
+		
+		Profile bobProf5 = new Profile(name5);
+		
+		bobProf5.addAnime("my hero academia", 2);
+		
 		ArrayList<Profile> users = new ArrayList<>();
 		users.add(bobProf);
 		users.add(bobProf2);
 		users.add(bobProf3);
-		
-		PageRank pageRank = new PageRank();
-		pageRank.setVerbose(true);
-		pageRank.init(graph);
+		users.add(bobProf4);
+		users.add(bobProf5);
 		
 		for (Profile user : users) {
 			Node a = graph.addNode(user.getUsername());
@@ -68,26 +102,60 @@ public class AnimeVisualization {
 				if (graph.getNode(anime) == null) {
 					Node b = graph.addNode(anime);
 					b.setAttribute("ui.color", Color.RED);
-					
-					AnimePage page = new AnimePage(anime);
-					page.getImage();
-					
-					Sprite sprite = sman.addSprite(getRandomString());
-					sprite.attachToNode(anime); 
-					sprite.setAttribute("ui.shape", "box");
-					sprite.setAttribute("ui.size", 50);
-					sprite.setAttribute("ui.fill-mode", "image-scaled");
-					sprite.setAttribute("ui.fill-image", "url('images/" + page.getName().toLowerCase() + ".jpg");
 				}
 			}
 			
 			for (String anime : animes) {
-				graph.addEdge(getRandomString(), user.getUsername(), anime);
+				graph.addEdge(getRandomString(), user.getUsername(), 
+						anime).setAttribute("length", 1);
 			}
 			
 		}
 		
 		graph.nodes().forEach(n -> n.setAttribute("label", n.getId()));
+		
+		while (true) {
+			String nodeA;
+			String nodeB;
+			
+			nodeA = JOptionPane.showInputDialog("Starting node?");
+			nodeB = JOptionPane.showInputDialog("Ending node?");
+			
+			if (graph.getNode(nodeA) == null) {
+				throw new ElementNotFoundException("Person A doesn't exist :(");
+			}
+			
+			if (graph.getNode(nodeB) == null) {
+				throw new ElementNotFoundException("Person B doesn't exist :(");
+			}
+			
+			List<String> path = findShortestContacts(nodeA, nodeB);
+			System.out.println(path.size());
+			
+			new AnimeVisualization(path);
+		}
+	}
+	
+	public static List<String> findShortestContacts(String x, String y) {
+		List<String> list = new ArrayList<>();
+		
+		Dijkstra dijk = new Dijkstra(Dijkstra.Element.EDGE, null, "length");
+		
+		dijk.init(graph);
+		dijk.setSource(graph.getNode(x));
+		dijk.compute();
+		
+		Path path = dijk.getPath(graph.getNode(y));
+		List<Node> nodePath = path.getNodePath();
+		
+		for (Node a : nodePath) {
+			String b = a.getId();
+			list.add(b);
+		}
+		
+		dijk.clear();
+		
+		return list;
 	}
 	
 	protected static String getRandomString() {

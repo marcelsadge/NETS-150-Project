@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-15">
-		<attributes>
-			<attribute name="module" value="true"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/Downloads/jsoup-1.13.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/git/NETS-150-Project/3rdparty/gs-algo-2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/git/NETS-150-Project/3rdparty/gs-core-2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/git/NETS-150-Project/3rdparty/gs-ui-javafx-2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Jeffrey Yang/git/NETS-150-Project/3rdparty/gs-ui-swing-2.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/linw5/Documents/GitHub/NETS-150-Project/3rdparty/gs-algo-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/linw5/Documents/GitHub/NETS-150-Project/3rdparty/gs-core-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/linw5/Documents/GitHub/NETS-150-Project/3rdparty/gs-ui-javafx-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/linw5/Documents/GitHub/NETS-150-Project/3rdparty/gs-ui-swing-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/linw5/Documents/GitHub/NETS-150-Project/3rdparty/jsoup-1.13.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

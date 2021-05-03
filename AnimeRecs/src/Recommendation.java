@@ -9,7 +9,7 @@ public class Recommendation {
 	private HashMap<String, Integer> animeRecFreq; 
 	
 	// sorted list of anime from most recommended to least recommended
-	private ArrayList<String> sortedAnimes;
+	private HashSet<String> sortedAnimes;
 	
 	// sorted list of anime recommendations based off of user standards
 	private ArrayList<String> sortedRecs;
@@ -57,7 +57,7 @@ public class Recommendation {
 		try {
 			AnimePage animePage = new AnimePage(anime);
 			
-			animePageMap.put(animePage.getUrl(), animePage);
+			animePageMap.put(animePage);
 			
 			animePage.setRecommendedAnimeToFrequencyMap();
 
@@ -87,7 +87,7 @@ public class Recommendation {
 	 */
 	private void sortRecommendations() {
 		Set<String> animeRecs = animeRecFreq.keySet();
-		sortedAnimes = new ArrayList<String>();
+		sortedAnimes = new HashSet<String>();
 		sortedRecs = new ArrayList<String>();
 		for (String anime : animeRecs) {
 			// place the anime in list if user has not watched it yet
@@ -118,10 +118,9 @@ public class Recommendation {
 			sortedAnimes.add(anime);
 			return;
 		}
-		for (int i = 0; i < sortedAnimes.size(); i++) {
-			String curr = sortedAnimes.get(i);
+		for (String curr : sortedAnimes) {
 			if (animeRecFreq.get(anime) >= animeRecFreq.get(curr)) {
-				sortedAnimes.add(i, anime);
+				sortedAnimes.add(anime);
 				return;
 			}
 		}
@@ -141,7 +140,7 @@ public class Recommendation {
 			animePage = animePageMap.getByName(anime);
 		} else {
 			animePage = new AnimePage(anime);
-			animePageMap.put(animePage.getUrl(), animePage);
+			animePageMap.put(animePage);
 		}
 		
 		if (animePage.getEpisodes() > user.getMaxEpisodes()) {

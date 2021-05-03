@@ -41,27 +41,27 @@ public class AnimePage {
     	// get our global anime page map
     	AnimePageMap animePageMap = AnimePageMap.getInstance();
     	
-        if (query.length() > 100 || query.length() < 3) {
+        if (query.length() > 100) {
+            System.out.println(query);
             throw new IllegalArgumentException();
         }
 
         try {
             doc = Jsoup.connect("https://myanimelist.net/anime.php?cat=anime&q="
                     + query).get();
+            //url of top search result
             url =  doc.selectFirst("a.hoverinfo_trigger")
                     .attr("abs:href");
-            
+            //name of top search result
+            name = doc.selectFirst("img.lazyload").attr("alt");
             // stores the anime page map in the global mapping
             if (url == null) {
                 throw new IllegalArgumentException();
-            } else if (!animePageMap.containsUrl(url)) {
-            	animePageMap.put(url, this);
+            } else if (!animePageMap.containsName(name)) {
+            	animePageMap.put(this);
             }
             
             doc = Jsoup.connect(url).get();
-            
-            // gets the name of the anime
-            name = doc.select("h1[class=title-name h1_bold_none]").text();
             
             // gets the score of the anime if it is available
             String scoreStr = doc.select("div[class~=score-label score-.*]").text();

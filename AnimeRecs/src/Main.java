@@ -200,7 +200,9 @@ public class Main extends JFrame {
 		
 		for (Node a : nodePath) {
 			String b = a.getId();
-			list.add(b);
+			if (!a.getAttribute("ui.color").equals(Color.RED)) {
+				list.add(b);
+			}
 		}
 		
 		dijk.clear();

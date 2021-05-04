@@ -71,8 +71,8 @@ public class Main extends JFrame {
 			int numberOfAnimes, numOfEpisodes, oldAnime = 0;
 			double minRating;
 			
-			numInput = JOptionPane.showInputDialog("How many episodes are you willing to watch"
-					+ " (max episode)?");
+			numInput = JOptionPane.showInputDialog("Maximum number of episodes that you"
+					+ " are willing to watch? \n(Please Enter an Integer)");
 			try {
 				numOfEpisodes = Integer.parseInt(numInput);
 			} catch (Exception e) {
@@ -80,7 +80,8 @@ public class Main extends JFrame {
 			}
 			profile.setMaxEpisodes(numOfEpisodes);
 			
-			minScore = JOptionPane.showInputDialog("Lowest rating for anime you want to watch?");
+			minScore = JOptionPane.showInputDialog("Lowest rating for anime you want to watch?"
+					+ " \n(Please Enter an Integer)");
 			try {
 				minRating = Double.parseDouble(minScore);
 			} catch (Exception e) {
@@ -88,7 +89,8 @@ public class Main extends JFrame {
 			}
 			profile.setMinScore(minRating);
 			
-			oldInput = JOptionPane.showInputDialog("Oldest year the anime you want to be is?");
+			oldInput = JOptionPane.showInputDialog("Oldest year for anime you want to watch?"
+					+ " \n(Please Enter an Integer)");
 			try {
 				oldAnime = Integer.parseInt(oldInput);
 			} catch (Exception e) {
@@ -96,10 +98,15 @@ public class Main extends JFrame {
 			}
 			profile.setOldestAnime(oldAnime);
 			
-			genrePref = JOptionPane.showInputDialog("Genre preference?");
-			profile.addGenrePref(genrePref);
+			genrePref = JOptionPane.showInputDialog("Genre preference for anime you want to watch?");
+			try {
+				profile.addGenrePref(genrePref);
+			} catch (Exception e) {
+				System.out.println("Invalid genre");
+			}
 			
-			animeInput = JOptionPane.showInputDialog("How many animes have you watched?");
+			animeInput = JOptionPane.showInputDialog("How many animes have you watched?"
+					+ "\n(Please Enter an Integer)");
 			try {
 				numberOfAnimes = Integer.parseInt(animeInput);
 			} catch (Exception e) {
@@ -110,9 +117,10 @@ public class Main extends JFrame {
 				String anime, animeScore;
 				int score;
 				
-				anime = JOptionPane.showInputDialog("Name of anime number " + (i + 1));
+				anime = JOptionPane.showInputDialog("Name of anime number " + (i + 1)
+						+ "Note: the name should be between 3 and 100 characters long");
 				animeScore = JOptionPane.showInputDialog("Your rating for anime number " + 
-				(i + 1));
+				(i + 1) + "\n(Please Enter an Integer)");
 				
 				try {
 					score = Integer.parseInt(animeScore);

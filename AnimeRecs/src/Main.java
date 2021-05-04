@@ -67,8 +67,8 @@ public class Main extends JFrame {
 			
 			Profile profile = new Profile(name);
 			
-			String animeInput, numInput, minScore, oldInput, genrePref;
-			int numberOfAnimes, numOfEpisodes, oldAnime = 0;
+			String animeInput, numInput, minScore, oldInput, genreNumInput, genrePref;
+			int numberOfGenres, numberOfAnimes, numOfEpisodes, oldAnime = 0;
 			double minRating;
 			
 			numInput = JOptionPane.showInputDialog("Maximum number of episodes that you"
@@ -98,11 +98,34 @@ public class Main extends JFrame {
 			}
 			profile.setOldestAnime(oldAnime);
 			
-			genrePref = JOptionPane.showInputDialog("Genre preference for anime you want to watch?");
+			genreNumInput = JOptionPane.showInputDialog("Number of genres you want to watch?"
+					+ " \n(Please Enter an Integer)");
 			try {
-				profile.addGenrePref(genrePref);
+				numberOfGenres = Integer.parseInt(genreNumInput);
 			} catch (Exception e) {
-				System.out.println("Invalid genre");
+				throw new IllegalArgumentException("Not a valid integer");
+			}
+
+			for (int i = 0; i < numberOfGenres; i++) {
+				genrePref = JOptionPane.showInputDialog("Genre preference "
+						+ (i+1) + " for anime you want to watch?"
+						+ "\n\n(Valid genres are:"
+						+ "\nAction, Adventure, Cars, Comedy,"
+						+ "\nDementia, Demons, Drama, Ecchi,"
+						+ "\nFantasy, Game, Harem, Hentai,"
+						+ "\nHistorical, Horror, Josei, Kids,"
+						+ "\nMagic, Martial Arts, Mecha, Military,"
+						+ "\nMusic, Mystery, Parody, Police,"
+						+ "\nPsychological, Romance, Samurai, School,"
+						+ "\nSciFi, Seinen, Shoujo, ShoujoAi,"
+						+ "\nShounen, ShounenAi, SliceOfLife,"
+						+ "\nSpace, Sports, SuperPower, Supernatural,"
+						+ "\nThriller, Vampire, Yaoi, Yuri");
+				try {
+					profile.addGenrePref(genrePref);
+				} catch (Exception e) {
+					System.out.println("Invalid genre");
+				}
 			}
 			
 			animeInput = JOptionPane.showInputDialog("How many animes have you watched?"

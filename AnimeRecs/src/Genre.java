@@ -47,12 +47,16 @@ public enum Genre {
     Yuri;
 
     public static Genre fromString(String s) {
-        if (s.equals("Martial Arts")) return Genre.MartialArts;
-        else if (s.equals("Sci-Fi")) return Genre.SciFi;
-        else if (s.equals("Shoujo Ai")) return Genre.ShoujoAi;
-        else if (s.equals("Shounen Ai")) return Genre.ShounenAi;
-        else if (s.equals("Slice of Life")) return Genre.SliceOfLife;
-        else if (s.equals("Super Power")) return Genre.SuperPower;
-        else return Genre.valueOf(s);
+        s = s.toLowerCase();
+        if (s.equals("martial arts")) return Genre.MartialArts;
+        else if (s.equals("sci-fi")) return Genre.SciFi;
+        else if (s.equals("shoujo ai")) return Genre.ShoujoAi;
+        else if (s.equals("shounen ai")) return Genre.ShounenAi;
+        else if (s.equals("slice of life")) return Genre.SliceOfLife;
+        else if (s.equals("super power")) return Genre.SuperPower;
+        else {
+            s = s.substring(0, 1).toUpperCase() + s.substring(1);
+            return Genre.valueOf(s);
+        }
     }
 }

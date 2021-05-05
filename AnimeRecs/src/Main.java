@@ -141,7 +141,7 @@ public class Main extends JFrame {
 				int score;
 				
 				anime = JOptionPane.showInputDialog("Name of anime number " + (i + 1)
-						+ "Note: the name should be between 3 and 100 characters long");
+						+ " Note: the name should be between 3 and 100 characters long");
 				animeScore = JOptionPane.showInputDialog("Your rating for anime number " + 
 				(i + 1) + "\n(Please Enter an Integer)");
 				

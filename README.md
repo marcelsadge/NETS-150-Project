@@ -15,6 +15,14 @@ the number of anime watched as well.
 You must install the 3rd party jar files in the 3rd party folder into your external
 JARs, otherwise the program will not run.
 
+Assumption: 
+-It connects to the website through JSOUP 
+through a search query and selects the top result. 
+-Animes tend to have multiple names, the official name and a
+nickname. We assume they both provide the top result.
+-We also assume the users don't input extreme
+answers for the input.
+
 ## 3rd Party Modifications
 GraphStream - 
 The graph visualization uses the GraphStream Api at https://graphstream-project.org/.
@@ -25,9 +33,7 @@ GraphStream and JSOUP.
 ## Classes
 AnimePage.java -
 Representation of the MyAnimeList.com anime page. Stores information such as
-name, url, year, etc. Assumption: It connects to the website through JSOUP 
-through a search query and selects the top result. It then gets the frequency 
-of the user recommendations.
+name, url, year, etc. 
 
 AnimePageMap.java -
 Maps name (string) to AnimePage to avoid repeating the same page multiple

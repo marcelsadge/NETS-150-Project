@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +46,14 @@ public class AnimePage {
             System.out.println(query);
             throw new IllegalArgumentException();
         }
-
+        
+        // Delay to prevent the website from blocking the program
+        try {
+			TimeUnit.MILLISECONDS.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+        
         try {
             doc = Jsoup.connect("https://myanimelist.net/anime.php?cat=anime&q="
                     + query).get();

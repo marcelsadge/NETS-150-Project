@@ -12,6 +12,16 @@ than 3 because the more genres inputted, the more websites it will scrape,
 and the more likely MyAnimeList will start the anti-bot program. This goes for 
 the number of anime watched as well. 
 
+You must install the 3rd party jar files in the 3rd party folder into your external
+JARs, otherwise the program will not run.
+
+## 3rd Party Modifications
+GraphStream - 
+The graph visualization uses the GraphStream Api at https://graphstream-project.org/.
+
+The required external JARs are located in the 3rd party folder. They are from
+GraphStream and JSOUP.
+
 ## Classes
 AnimePage.java -
 Representation of the MyAnimeList.com anime page. Stores information such as

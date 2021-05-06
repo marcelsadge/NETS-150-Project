@@ -1,8 +1,12 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -22,6 +26,7 @@ import org.graphstream.ui.spriteManager.SpriteManager;
 public class AnimeVisualization extends JFrame{
 	
 	static Graph graph;
+	static HashMap<Node, List<String>> animeAdjMatrix;
 	
 	AnimeVisualization(List<String> path) {
 		JList<String> displayList = new JList<>(path.toArray(new String[0]));
@@ -113,26 +118,75 @@ public class AnimeVisualization extends JFrame{
 		}
 		
 		graph.nodes().forEach(n -> n.setAttribute("label", n.getId()));
-		
 		while (true) {
-			String nodeA;
-			String nodeB;
+			Scanner sc = new Scanner(System.in);
+			System.out.println("To find shortest path between two users " +
+			"\n(Please Enter 'Path')" +
+					"\nTo find all triadic closures " +
+			"\n(Please Enter any string)");
 			
-			nodeA = JOptionPane.showInputDialog("Starting node?");
-			nodeB = JOptionPane.showInputDialog("Ending node?");
+			String input = sc.nextLine();
 			
-			if (graph.getNode(nodeA) == null) {
-				throw new ElementNotFoundException("Person A doesn't exist :(");
+			if (input.equals("Path")) {
+				String nodeA;
+				String nodeB;
+				
+				nodeA = JOptionPane.showInputDialog("Starting node?");
+				nodeB = JOptionPane.showInputDialog("Ending node?");
+				
+				if (graph.getNode(nodeA) == null) {
+					throw new ElementNotFoundException("Person A doesn't exist :(");
+				}
+				
+				if (graph.getNode(nodeB) == null) {
+					throw new ElementNotFoundException("Person B doesn't exist :(");
+				}
+				
+				List<String> path = findShortestContacts(nodeA, nodeB);
+				
+				new Main(path);
+			} else {
+				animeAdjMatrix = new HashMap<>();
+				
+				for (Node node : graph) {
+					if (node.getAttribute("ui.color").equals(Color.RED)) {
+						animeAdjMatrix.put(node, new ArrayList<>());
+					}
+				}
+				
+				for (Node n : graph) {
+					if (n.getAttribute("ui.color").equals(Color.RED)) {
+						for (Node n2 : graph) {
+							if (!n2.getAttribute("ui.color").equals(Color.RED)) {
+								if (n.hasEdgeBetween(n2)) {
+									List<String> animes = animeAdjMatrix.get(n);
+									animes.add(n2.getId());
+									animeAdjMatrix.replace(n, animes);
+								}
+							}
+						}
+						
+					}
+				}
+				
+				for (Entry<Node, List<String>> entry : animeAdjMatrix.entrySet()) {
+					List<String> listOfUsers = entry.getValue();
+					
+					for (Iterator<String> iter = listOfUsers.iterator(); iter.hasNext();) {
+						String curr = iter.next();
+						for (Iterator<String> iter2 = listOfUsers.iterator(); iter2.hasNext();) {
+							String curr2 = iter2.next();
+							if (!graph.getNode(curr).hasEdgeBetween(curr2) && 
+									!graph.getNode(curr2).hasEdgeBetween(curr) &&
+									!curr.equals(curr2)) {
+								graph.addEdge(getRandomString(), curr, curr2)
+								.setAttribute("ui.style", "fill-color: blue; ");;
+							}
+						}
+					}
+				}
+				graph.display();
 			}
-			
-			if (graph.getNode(nodeB) == null) {
-				throw new ElementNotFoundException("Person B doesn't exist :(");
-			}
-			
-			List<String> path = findShortestContacts(nodeA, nodeB);
-			System.out.println(path.size());
-			
-			new AnimeVisualization(path);
 		}
 	}
 	

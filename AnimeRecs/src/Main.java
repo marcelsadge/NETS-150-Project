@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.Random;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -17,13 +20,13 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.Path;
 import org.graphstream.graph.implementations.*;
-import org.graphstream.ui.spriteManager.Sprite;
-import org.graphstream.ui.spriteManager.SpriteManager;
 
 public class Main extends JFrame {
 	
 	static ArrayList<Profile> users;
 	static Graph graph;
+	static HashMap<Node, List<String>> animeAdjMatrix;
+	static int count = 0;
 	
 	Main(Recommendation userRec) {
 		userRec.updateRecommendations();
@@ -58,122 +61,194 @@ public class Main extends JFrame {
 			
 			if (name.equals("end")) {
 				System.exit(0);
-			}
-			
-			if (name.equals("map")) {
+			} else if (name.equals("map")) {
 				createMapOfUsers();
-				break;
-			}
-			
-			Profile profile = new Profile(name);
-			
-			String animeInput, numInput, minScore, oldInput, genreNumInput, genrePref;
-			int numberOfGenres, numberOfAnimes, numOfEpisodes, oldAnime = 0;
-			double minRating;
-			
-			numInput = JOptionPane.showInputDialog("Maximum number of episodes that you"
-					+ " are willing to watch? \n(Please Enter an Integer)");
-			try {
-				numOfEpisodes = Integer.parseInt(numInput);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Not a valid integer");
-			}
-			profile.setMaxEpisodes(numOfEpisodes);
-			
-			minScore = JOptionPane.showInputDialog("Lowest rating for anime you want to watch?"
-					+ " \n(Please Enter an Integer)");
-			try {
-				minRating = Double.parseDouble(minScore);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Not a valid integer");
-			}
-			profile.setMinScore(minRating);
-			
-			oldInput = JOptionPane.showInputDialog("Oldest year for anime you want to watch?"
-					+ " \n(Please Enter an Integer)");
-			try {
-				oldAnime = Integer.parseInt(oldInput);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Not a valid integer");
-			}
-			profile.setOldestAnime(oldAnime);
-			
-			genreNumInput = JOptionPane.showInputDialog("Number of genres you want to watch?"
-					+ " \n(Please Enter an Integer)");
-			try {
-				numberOfGenres = Integer.parseInt(genreNumInput);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Not a valid integer");
-			}
-
-			for (int i = 0; i < numberOfGenres; i++) {
-				genrePref = JOptionPane.showInputDialog("Genre preference "
-						+ (i+1) + " for anime you want to watch?"
-						+ "\n\n(Valid genres are:"
-						+ "\nAction, Adventure, Cars, Comedy,"
-						+ "\nDementia, Demons, Drama, Ecchi,"
-						+ "\nFantasy, Game, Harem, Hentai,"
-						+ "\nHistorical, Horror, Josei, Kids,"
-						+ "\nMagic, Martial Arts, Mecha, Military,"
-						+ "\nMusic, Mystery, Parody, Police,"
-						+ "\nPsychological, Romance, Samurai, School,"
-						+ "\nSciFi, Seinen, Shoujo, ShoujoAi,"
-						+ "\nShounen, ShounenAi, SliceOfLife,"
-						+ "\nSpace, Sports, SuperPower, Supernatural,"
-						+ "\nThriller, Vampire, Yaoi, Yuri");
-				try {
-					profile.addGenrePref(genrePref);
-				} catch (Exception e) {
-					System.out.println("Invalid genre");
+				while (true) {
+					Scanner sc = new Scanner(System.in);
+					System.out.println("To find shortest path between two users " +
+					"\n(Please enter 'Path')" +
+							"\nTo find all triadic closures " +
+					"\n(Please enter 'Closure')" + 
+							"\nPlease enter 'Return' to return home");
+					
+					String input = sc.nextLine();
+					
+					if (input.equals("Path")) {
+						String nodeA;
+						String nodeB;
+						
+						nodeA = JOptionPane.showInputDialog("Starting node?");
+						nodeB = JOptionPane.showInputDialog("Ending node?");
+						
+						if (graph.getNode(nodeA) == null) {
+							throw new ElementNotFoundException("Person A doesn't exist :(");
+						}
+						
+						if (graph.getNode(nodeB) == null) {
+							throw new ElementNotFoundException("Person B doesn't exist :(");
+						}
+						
+						List<String> path = findShortestContacts(nodeA, nodeB);
+						
+						new Main(path);
+					} else if (input.equals("Closure")) {
+						animeAdjMatrix = new HashMap<>();
+						
+						for (Node node : graph) {
+							if (node.getAttribute("ui.color").equals(Color.RED)) {
+								animeAdjMatrix.put(node, new ArrayList<>());
+							}
+						}
+						
+						for (Node n : graph) {
+							if (n.getAttribute("ui.color").equals(Color.RED)) {
+								for (Node n2 : graph) {
+									if (!n2.getAttribute("ui.color").equals(Color.RED)) {
+										if (n.hasEdgeBetween(n2)) {
+											List<String> animes = animeAdjMatrix.get(n);
+											animes.add(n2.getId());
+											animeAdjMatrix.replace(n, animes);
+										}
+									}
+								}
+								
+							}
+						}
+						
+						for (Entry<Node, List<String>> entry : animeAdjMatrix.entrySet()) {
+							List<String> listOfUsers = entry.getValue();
+							
+							for (Iterator<String> iter = listOfUsers.iterator(); iter.hasNext();) {
+								String curr = iter.next();
+								for (Iterator<String> iter2 = listOfUsers.iterator(); iter2.hasNext();) {
+									String curr2 = iter2.next();
+									if (!graph.getNode(curr).hasEdgeBetween(curr2) && 
+											!graph.getNode(curr2).hasEdgeBetween(curr) &&
+											!curr.equals(curr2)) {
+										graph.addEdge(getRandomString(), curr, curr2)
+										.setAttribute("ui.style", "fill-color: blue; ");;
+									}
+								}
+							}
+						}
+					} else if (input.equals("Return")) {
+						break;
+					}
 				}
-			}
-			
-			animeInput = JOptionPane.showInputDialog("How many animes have you watched?"
-					+ "\n(Please Enter an Integer)");
-			try {
-				numberOfAnimes = Integer.parseInt(animeInput);
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Not a valid integer");
-			}
-			
-			for (int i = 0; i < numberOfAnimes; i++) {
-				String anime, animeScore;
-				int score;
+			} else {
+				Profile profile = null;
+				boolean alreadyVisited = false;
 				
-				anime = JOptionPane.showInputDialog("Name of anime number " + (i + 1)
-						+ " Note: the name should be between 3 and 100 characters long");
-				animeScore = JOptionPane.showInputDialog("Your rating for anime number " + 
-				(i + 1) + "\n(Please Enter an Integer)");
+				for (Iterator<Profile> iter = users.iterator(); iter.hasNext();) {
+					Profile user = iter.next();
+					if (name.equals(user.getUsername())) {
+						alreadyVisited = true;
+						profile = user;
+						break;
+					}
+				}
+				if (!alreadyVisited) {
+					profile = new Profile(name);
+				}
 				
+				String animeInput, numInput, minScore, oldInput, genreNumInput, genrePref;
+				int numberOfGenres, numberOfAnimes, numOfEpisodes, oldAnime = 0;
+				double minRating;
+				
+				numInput = JOptionPane.showInputDialog("Maximum number of episodes that you"
+						+ " are willing to watch? \n(Please Enter an Integer)");
 				try {
-					score = Integer.parseInt(animeScore);
+					numOfEpisodes = Integer.parseInt(numInput);
 				} catch (Exception e) {
 					throw new IllegalArgumentException("Not a valid integer");
 				}
-				profile.addAnime(anime, score);
+				profile.setMaxEpisodes(numOfEpisodes);
+				
+				minScore = JOptionPane.showInputDialog("Lowest rating for anime you want to watch?"
+						+ " \n(Please Enter an Integer)");
+				try {
+					minRating = Double.parseDouble(minScore);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Not a valid integer");
+				}
+				profile.setMinScore(minRating);
+				
+				oldInput = JOptionPane.showInputDialog("Oldest year for anime you want to watch?"
+						+ " \n(Please Enter an Integer)");
+				try {
+					oldAnime = Integer.parseInt(oldInput);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Not a valid integer");
+				}
+				profile.setOldestAnime(oldAnime);
+				
+				genreNumInput = JOptionPane.showInputDialog("Number of genres you want to watch?"
+						+ " \n(Please Enter an Integer)");
+				try {
+					numberOfGenres = Integer.parseInt(genreNumInput);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Not a valid integer");
+				}
+	
+				for (int i = 0; i < numberOfGenres; i++) {
+					genrePref = JOptionPane.showInputDialog("Genre preference "
+							+ (i+1) + " for anime you want to watch?"
+							+ "\n\n(Valid genres are:"
+							+ "\nAction, Adventure, Cars, Comedy,"
+							+ "\nDementia, Demons, Drama, Ecchi,"
+							+ "\nFantasy, Game, Harem, Hentai,"
+							+ "\nHistorical, Horror, Josei, Kids,"
+							+ "\nMagic, Martial Arts, Mecha, Military,"
+							+ "\nMusic, Mystery, Parody, Police,"
+							+ "\nPsychological, Romance, Samurai, School,"
+							+ "\nSciFi, Seinen, Shoujo, ShoujoAi,"
+							+ "\nShounen, ShounenAi, SliceOfLife,"
+							+ "\nSpace, Sports, SuperPower, Supernatural,"
+							+ "\nThriller, Vampire, Yaoi, Yuri");
+					try {
+						profile.addGenrePref(genrePref);
+					} catch (Exception e) {
+						System.out.println("Invalid genre");
+					}
+				}
+				
+				animeInput = JOptionPane.showInputDialog("How many animes have you watched?"
+						+ "\n(Please Enter an Integer)");
+				try {
+					numberOfAnimes = Integer.parseInt(animeInput);
+				} catch (Exception e) {
+					throw new IllegalArgumentException("Not a valid integer");
+				}
+				
+				for (int i = 0; i < numberOfAnimes; i++) {
+					String anime, animeScore;
+					int score;
+					
+					anime = JOptionPane.showInputDialog("Name of anime number " + (i + 1)
+							+ " Note: the name should be between 3 and 100 characters long");
+					animeScore = JOptionPane.showInputDialog("Your rating for anime number " + 
+					(i + 1) + "\n(Please Enter an Integer)");
+					
+					try {
+						score = Integer.parseInt(animeScore);
+					} catch (Exception e) {
+						throw new IllegalArgumentException("Not a valid integer");
+					}
+					profile.addAnime(anime, score);
+				}
+				users.add(profile);
+				Recommendation userRec = new Recommendation(profile);
+				if (count != 0) {
+					try {
+						TimeUnit.MILLISECONDS.sleep(15000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				} else {
+					count++;
+				}
+				new Main(userRec);
 			}
-			users.add(profile);
-			Recommendation userRec = new Recommendation(profile);
-			new Main(userRec);
-		}
-		while (true) {
-			String nodeA;
-			String nodeB;
-			
-			nodeA = JOptionPane.showInputDialog("Starting node?");
-			nodeB = JOptionPane.showInputDialog("Ending node?");
-			
-			if (graph.getNode(nodeA) == null) {
-				throw new ElementNotFoundException("Person A doesn't exist :(");
-			}
-			
-			if (graph.getNode(nodeB) == null) {
-				throw new ElementNotFoundException("Person B doesn't exist :(");
-			}
-			
-			List<String> path = findShortestContacts(nodeA, nodeB);
-			
-			new Main(path);
 		}
 	}
 	
@@ -188,8 +263,6 @@ public class Main extends JFrame {
 				"node {fill-mode: dyn-plain; size-mode: dyn-size; text-size: 20;} "
 				+ "edge {fill-color:black;}");
 		graph.display();
-		
-		SpriteManager sman = new SpriteManager(graph);
 		
 		for (Profile user : users) {
 			Node a = graph.addNode(user.getUsername());

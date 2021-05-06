@@ -98,13 +98,11 @@ public class Main extends JFrame {
 						nodeB = JOptionPane.showInputDialog("Ending node?");
 						
 						if (graph.getNode(nodeA) == null) {
-							sc.close();
-							throw new ElementNotFoundException("Person A doesn't exist :(");
+							continue;
 						}
 						
 						if (graph.getNode(nodeB) == null) {
-							sc.close();
-							throw new ElementNotFoundException("Person B doesn't exist :(");
+							continue;
 						}
 						
 						List<String> path = findShortestContacts(nodeA, nodeB);
@@ -182,7 +180,8 @@ public class Main extends JFrame {
 				try {
 					numOfEpisodes = Integer.parseInt(numInput);
 				} catch (Exception e) {
-					throw new IllegalArgumentException("Not a valid integer");
+					System.out.println("Invalid integer");
+					continue;
 				}
 				profile.setMaxEpisodes(numOfEpisodes);
 				
@@ -191,7 +190,8 @@ public class Main extends JFrame {
 				try {
 					minRating = Double.parseDouble(minScore);
 				} catch (Exception e) {
-					throw new IllegalArgumentException("Not a valid integer");
+					System.out.println("Invalid integer");
+					continue;
 				}
 				profile.setMinScore(minRating);
 				
@@ -200,7 +200,8 @@ public class Main extends JFrame {
 				try {
 					oldAnime = Integer.parseInt(oldInput);
 				} catch (Exception e) {
-					throw new IllegalArgumentException("Not a valid integer");
+					System.out.println("Invalid integer");
+					continue;
 				}
 				profile.setOldestAnime(oldAnime);
 				
@@ -209,7 +210,8 @@ public class Main extends JFrame {
 				try {
 					numberOfGenres = Integer.parseInt(genreNumInput);
 				} catch (Exception e) {
-					throw new IllegalArgumentException("Not a valid integer");
+					System.out.println("Invalid integer");
+					continue;
 				}
 	
 				for (int i = 0; i < numberOfGenres; i++) {
@@ -231,6 +233,7 @@ public class Main extends JFrame {
 						profile.addGenrePref(genrePref);
 					} catch (Exception e) {
 						System.out.println("Invalid genre");
+						continue;
 					}
 				}
 				
@@ -239,7 +242,8 @@ public class Main extends JFrame {
 				try {
 					numberOfAnimes = Integer.parseInt(animeInput);
 				} catch (Exception e) {
-					throw new IllegalArgumentException("Not a valid integer");
+					System.out.println("Invalid integer");
+					continue;
 				}
 				
 				for (int i = 0; i < numberOfAnimes; i++) {
@@ -254,7 +258,8 @@ public class Main extends JFrame {
 					try {
 						score = Integer.parseInt(animeScore);
 					} catch (Exception e) {
-						throw new IllegalArgumentException("Not a valid integer");
+						System.out.println("Invalid integer");
+						continue;
 					}
 					profile.addAnime(anime, score);
 				}

@@ -98,15 +98,17 @@ public class Main extends JFrame {
 						nodeB = JOptionPane.showInputDialog("Ending node?");
 						
 						if (graph.getNode(nodeA) == null) {
+							sc.close();
 							throw new ElementNotFoundException("Person A doesn't exist :(");
 						}
 						
 						if (graph.getNode(nodeB) == null) {
+							sc.close();
 							throw new ElementNotFoundException("Person B doesn't exist :(");
 						}
 						
 						List<String> path = findShortestContacts(nodeA, nodeB);
-						
+						sc.close();
 						new Main(path);
 					} else if (input.equals("Closure")) {
 						// Code for Triadic Closure
@@ -148,8 +150,10 @@ public class Main extends JFrame {
 									}
 								}
 							}
+							sc.close();
 						}
 					} else if (input.equals("Return")) {
+						sc.close();
 						break;
 					}
 				}
@@ -222,7 +226,7 @@ public class Main extends JFrame {
 							+ "\nSciFi, Seinen, Shoujo, ShoujoAi,"
 							+ "\nShounen, ShounenAi, SliceOfLife,"
 							+ "\nSpace, Sports, SuperPower, Supernatural,"
-							+ "\nThriller, Vampire, Yaoi, Yuri");
+							+ "\nThriller, Vampire, Yaoi, Yuri)");
 					try {
 						profile.addGenrePref(genrePref);
 					} catch (Exception e) {

@@ -9,7 +9,7 @@ public class Recommendation {
 	private HashMap<String, Integer> animeRecFreq; 
 	
 	// sorted list of anime from most recommended to least recommended
-	private HashSet<String> sortedAnimes;
+	private ArrayList<String> sortedAnimes;
 	
 	// sorted list of anime recommendations based off of user standards
 	private ArrayList<String> sortedRecs;
@@ -87,7 +87,7 @@ public class Recommendation {
 	 */
 	private void sortRecommendations() {
 		Set<String> animeRecs = animeRecFreq.keySet();
-		sortedAnimes = new HashSet<String>();
+		sortedAnimes = new ArrayList<String>();
 		sortedRecs = new ArrayList<String>();
 		for (String anime : animeRecs) {
 			// place the anime in list if user has not watched it yet
@@ -118,9 +118,10 @@ public class Recommendation {
 			sortedAnimes.add(anime);
 			return;
 		}
-		for (String curr : sortedAnimes) {
+		for (int i = 0; i < sortedAnimes.size(); i++) {
+			String curr = sortedAnimes.get(i);
 			if (animeRecFreq.get(anime) >= animeRecFreq.get(curr)) {
-				sortedAnimes.add(anime);
+				sortedAnimes.add(i, anime);
 				return;
 			}
 		}
@@ -192,24 +193,24 @@ public class Recommendation {
 		Profile user = new Profile("Bob");
 		user.addAnime("One Piece");
 		user.addAnime("Bleach");
-		user.addAnime("Fairy Tail TV");
-		user.addAnime("Darling in the Franxx");
-		user.addAnime("Pokemon");
-		user.addAnime("Dragon Ball");
-		user.addAnime("Hunter x Hunter");
-		user.addAnime("Soul Eater");
-		user.addAnime("Black Clover");
-		user.addAnime("Boku no Hero Academia");
-		user.addAnime("Ao no Exorcist");
-		user.addAnime("One Punch Man");
-		user.addAnime("Nanatsu no Taizai");
-		user.addAnime("Noragami");
-		user.addAnime("Mob Psycho 100");
-		user.addAnime("Saiki Kusuo No");
-		user.addAnime("Kimetsu no Yaiba");
-		user.addAnime("Jujutsu Kaisen (TV)");
-		user.addAnime("Ansatsu Kyoushitsu");
-		user.addAnime("Shingeki no Kyojin");
+//		user.addAnime("Fairy Tail TV");
+//		user.addAnime("Darling in the Franxx");
+//		user.addAnime("Pokemon");
+//		user.addAnime("Dragon Ball");
+//		user.addAnime("Hunter x Hunter");
+//		user.addAnime("Soul Eater");
+//		user.addAnime("Black Clover");
+//		user.addAnime("Boku no Hero Academia");
+//		user.addAnime("Ao no Exorcist");
+//		user.addAnime("One Punch Man");
+//		user.addAnime("Nanatsu no Taizai");
+//		user.addAnime("Noragami");
+//		user.addAnime("Mob Psycho 100");
+//		user.addAnime("Saiki Kusuo No");
+//		user.addAnime("Kimetsu no Yaiba");
+//		user.addAnime("Jujutsu Kaisen (TV)");
+//		user.addAnime("Ansatsu Kyoushitsu");
+//		user.addAnime("Shingeki no Kyojin");
 		user.setMaxEpisodes(200);
 		user.setMinScore(8.0);
 		user.setOldestAnime(2015);

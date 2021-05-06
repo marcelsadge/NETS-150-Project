@@ -23,6 +23,9 @@ import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.spriteManager.Sprite;
 import org.graphstream.ui.spriteManager.SpriteManager;
 
+/* This class is for testing purposes. The class manually inputs examples 
+ * and outputs a graph with all the users.
+ */
 public class AnimeVisualization extends JFrame{
 	
 	static Graph graph;

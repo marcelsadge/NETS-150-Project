@@ -23,11 +23,22 @@ import org.graphstream.graph.implementations.*;
 
 public class Main extends JFrame {
 	
+	// List of users inputted into program
 	static ArrayList<Profile> users;
+	
+	// Graph of all the users and anime
 	static Graph graph;
-	static HashMap<Node, List<String>> animeAdjMatrix;
+	
+	// Adjacency List of anime nodes to user nodes
+	static HashMap<Node, List<String>> animeAdjList;
+	
+	// Counter for delay
 	static int count = 0;
 	
+	/**
+	 * Constructor for Main - Prints out recommendations
+	 * @param userRec the recommendation class of the user
+	 */
 	Main(Recommendation userRec) {
 		userRec.updateRecommendations();
 		List<String> list = userRec.getRecs();
@@ -41,6 +52,10 @@ public class Main extends JFrame {
         setVisible(true);
 	}
 	
+	/**
+	 * Constructor for Main - Prints out shortest path
+	 * @param path the path list
+	 */
 	Main(List<String> path) {
 		JList<String> displayList = new JList<>(path.toArray(new String[0]));
 		JScrollPane scrollPane = new JScrollPane(displayList);
@@ -74,6 +89,8 @@ public class Main extends JFrame {
 					String input = sc.nextLine();
 					
 					if (input.equals("Path")) {
+						//Code for Dijkstra
+						
 						String nodeA;
 						String nodeB;
 						
@@ -92,11 +109,12 @@ public class Main extends JFrame {
 						
 						new Main(path);
 					} else if (input.equals("Closure")) {
-						animeAdjMatrix = new HashMap<>();
+						// Code for Triadic Closure
+						animeAdjList = new HashMap<>();
 						
 						for (Node node : graph) {
 							if (node.getAttribute("ui.color").equals(Color.RED)) {
-								animeAdjMatrix.put(node, new ArrayList<>());
+								animeAdjList.put(node, new ArrayList<>());
 							}
 						}
 						
@@ -105,9 +123,9 @@ public class Main extends JFrame {
 								for (Node n2 : graph) {
 									if (!n2.getAttribute("ui.color").equals(Color.RED)) {
 										if (n.hasEdgeBetween(n2)) {
-											List<String> animes = animeAdjMatrix.get(n);
+											List<String> animes = animeAdjList.get(n);
 											animes.add(n2.getId());
-											animeAdjMatrix.replace(n, animes);
+											animeAdjList.replace(n, animes);
 										}
 									}
 								}
@@ -115,7 +133,7 @@ public class Main extends JFrame {
 							}
 						}
 						
-						for (Entry<Node, List<String>> entry : animeAdjMatrix.entrySet()) {
+						for (Entry<Node, List<String>> entry : animeAdjList.entrySet()) {
 							List<String> listOfUsers = entry.getValue();
 							
 							for (Iterator<String> iter = listOfUsers.iterator(); iter.hasNext();) {
@@ -290,6 +308,12 @@ public class Main extends JFrame {
 		graph.nodes().forEach(n -> n.setAttribute("label", n.getId()));
 	}
 	
+	/**
+	 * Dijkstra's algorithm from GraphStream
+	 * @param x start node
+	 * @param y end node
+	 * @return list of nodes representing the shortest path
+	 */
 	public static List<String> findShortestContacts(String x, String y) {
 		List<String> list = new ArrayList<>();
 		
@@ -316,6 +340,7 @@ public class Main extends JFrame {
 	
 	/**
      * Creates a random string of length 18, used to create node Ids
+     * @return random generated string
      */
 	protected static String getRandomString() {
         String random = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
